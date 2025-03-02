@@ -1,0 +1,85 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Vilonti-Bold.otf",
+      "sha1": "59a2dfdcc4d55a20dffb44b91ab6dda53620afa9"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Bold.ttf",
+      "sha1": "1810ab8e8a7f7decd5bacceb16964656e6720920"
+    },
+    {
+      "path": "assets/fonts/Vilonti-BoldItalic.otf",
+      "sha1": "38f06e758410bbfaf237bbf99600b6984cc009fe"
+    },
+    {
+      "path": "assets/fonts/Vilonti-BoldItalic.ttf",
+      "sha1": "32b1e14e97bdb34405887b8ef8878af6340356da"
+    },
+    {
+      "path": "assets/fonts/Vilonti-ExtraBlack.otf",
+      "sha1": "ec78e50126eb96c608900abfa7f2117afe5cf4f7"
+    },
+    {
+      "path": "assets/fonts/Vilonti-ExtraBlack.ttf",
+      "sha1": "e92adb00f49ff3f5b9d96fc5ece544363a47b37f"
+    },
+    {
+      "path": "assets/fonts/Vilonti-ExtraBlackItalic.otf",
+      "sha1": "a6eb821285f962c2094cb686f4c2fc05e3cee316"
+    },
+    {
+      "path": "assets/fonts/Vilonti-ExtraBlackItalic.ttf",
+      "sha1": "c14503067cfc248b5dbd706b61562e29d4fcc9f1"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Italic.otf",
+      "sha1": "f0600fd2afe8f5b71225e8cc8466d1657f635f9f"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Italic.ttf",
+      "sha1": "7ad6435cd7bbd705495758895fdbdb6feed82df7"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Medium.otf",
+      "sha1": "1336881fa784205214cd974d2e7c4c0a02d07fb8"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Medium.ttf",
+      "sha1": "3bd4c5bc0dc980c179c4f1576b9c260b83144053"
+    },
+    {
+      "path": "assets/fonts/Vilonti-MediumItalic.otf",
+      "sha1": "348661913a1689bc3466c51ad5b4277d6535482e"
+    },
+    {
+      "path": "assets/fonts/Vilonti-MediumItalic.ttf",
+      "sha1": "8217fab33b1b91f4d0d80f1587b905382b9eb3a8"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Regular.otf",
+      "sha1": "5a8dc2ddf37a1444cba1a4713f65f1884d4620c9"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Regular.ttf",
+      "sha1": "52c9199da818f48bd7874adf4dfcaba7ce3d5f28"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Thin.otf",
+      "sha1": "c64b14044b17ce4c7349967144e656c4bd75e221"
+    },
+    {
+      "path": "assets/fonts/Vilonti-Thin.ttf",
+      "sha1": "0633abc9c64c7598372faa47796c42e275cdcf17"
+    },
+    {
+      "path": "assets/fonts/Vilonti-ThinItalic.otf",
+      "sha1": "bd9e2294f3985eccc0559880df2ba5b58866da53"
+    },
+    {
+      "path": "assets/fonts/Vilonti-ThinItalic.ttf",
+      "sha1": "1f3032a00a058da104c7ecf34a91aa7a1b31f1c4"
+    }
+  ]
+}

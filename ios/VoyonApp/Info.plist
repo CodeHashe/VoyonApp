@@ -49,5 +49,28 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Vilonti-Bold.otf</string>
+		<string>Vilonti-BoldItalic.otf</string>
+		<string>Vilonti-ExtraBlack.otf</string>
+		<string>Vilonti-ExtraBlackItalic.otf</string>
+		<string>Vilonti-Italic.otf</string>
+		<string>Vilonti-Medium.otf</string>
+		<string>Vilonti-MediumItalic.otf</string>
+		<string>Vilonti-Regular.otf</string>
+		<string>Vilonti-Thin.otf</string>
+		<string>Vilonti-ThinItalic.otf</string>
+		<string>Vilonti-Bold.ttf</string>
+		<string>Vilonti-BoldItalic.ttf</string>
+		<string>Vilonti-ExtraBlack.ttf</string>
+		<string>Vilonti-ExtraBlackItalic.ttf</string>
+		<string>Vilonti-Italic.ttf</string>
+		<string>Vilonti-Medium.ttf</string>
+		<string>Vilonti-MediumItalic.ttf</string>
+		<string>Vilonti-Regular.ttf</string>
+		<string>Vilonti-Thin.ttf</string>
+		<string>Vilonti-ThinItalic.ttf</string>
+	</array>
 </dict>
 </plist>
