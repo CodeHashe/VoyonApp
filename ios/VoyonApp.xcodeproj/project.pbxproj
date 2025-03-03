@@ -3,73 +3,80 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0229511DC3B44E0889FB899C /* Vilonti-ExtraBlack.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A46E7A71EFD3446FB7E8788D /* Vilonti-ExtraBlack.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		17E0A3AE83404077AE4F6B3A /* Vilonti-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F14909B4B07D4C18A6F9DADF /* Vilonti-MediumItalic.ttf */; };
+		359C6852A2D74F0CA3300E9B /* Vilonti-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 94D7FE7A4FC44F46A89E8FC9 /* Vilonti-Bold.ttf */; };
+		3B55F564C65D466788265C32 /* Vilonti-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 79080CFEAEF14C2CB07BBD26 /* Vilonti-ThinItalic.ttf */; };
+		3E3725700F8F4D2AA30C02AD /* Vilonti-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C166C86C7E7048ABAAEAE487 /* Vilonti-Thin.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		96905EF65AED1B983A6B3ABC /* libPods-VoyonApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-VoyonApp.a */; };
-		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
-		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		9EB55E37DC704A36A7589366 /* Vilonti-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B6A65B9DDF747AB90A5E5D4 /* Vilonti-Bold.otf */; };
+		4224A6AD57E145AD98F11704 /* Vilonti-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23D171A0F5D44A2F84D8A9A5 /* Vilonti-BoldItalic.ttf */; };
 		56125CB785E34897AFA77332 /* Vilonti-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 76791CC85DA54F55BFDE0D07 /* Vilonti-BoldItalic.otf */; };
-		A1419DC8EE184A7FBD15B676 /* Vilonti-ExtraBlack.otf in Resources */ = {isa = PBXBuildFile; fileRef = D57DCF8ADEE14698A0C22788 /* Vilonti-ExtraBlack.otf */; };
+		5D65A6DD386D4D0294B57322 /* Vilonti-ThinItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 296E72AB3023427D8762622B /* Vilonti-ThinItalic.otf */; };
 		6749E3A4F9644A16B628AEDD /* Vilonti-ExtraBlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1935DA06406048AEA154BF44 /* Vilonti-ExtraBlackItalic.otf */; };
 		681BDAB07ABA40889ECD106E /* Vilonti-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3EEE9C3E12FC4AFF9C92CB09 /* Vilonti-Italic.otf */; };
-		E75C309D9673440490470F7A /* Vilonti-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC2FDFD4A0E440494239A7E /* Vilonti-Medium.otf */; };
-		98CF5732356344E98D835000 /* Vilonti-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 58E701A679F14E9BB43CB037 /* Vilonti-MediumItalic.otf */; };
 		75E531F3A9A340029F551416 /* Vilonti-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 521EC03A4C9049FD9C810DFC /* Vilonti-Regular.otf */; };
-		A5EB6AA7CF514FDEA70DC419 /* Vilonti-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B8EF8DC860E045A1BC93E6EC /* Vilonti-Thin.otf */; };
-		5D65A6DD386D4D0294B57322 /* Vilonti-ThinItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 296E72AB3023427D8762622B /* Vilonti-ThinItalic.otf */; };
-		359C6852A2D74F0CA3300E9B /* Vilonti-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 94D7FE7A4FC44F46A89E8FC9 /* Vilonti-Bold.ttf */; };
-		4224A6AD57E145AD98F11704 /* Vilonti-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23D171A0F5D44A2F84D8A9A5 /* Vilonti-BoldItalic.ttf */; };
-		0229511DC3B44E0889FB899C /* Vilonti-ExtraBlack.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A46E7A71EFD3446FB7E8788D /* Vilonti-ExtraBlack.ttf */; };
-		C0076F61327A4F27814DE53A /* Vilonti-ExtraBlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE7E9A9BBD744D8CAEC34F4C /* Vilonti-ExtraBlackItalic.ttf */; };
-		A658C56337BA4AD6B64180DE /* Vilonti-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49A9A41E4DC24F6B875CA4A6 /* Vilonti-Italic.ttf */; };
 		83ECF41A341044B69C924F82 /* Vilonti-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 78D3C2E948CF41B396E2AEC0 /* Vilonti-Medium.ttf */; };
-		17E0A3AE83404077AE4F6B3A /* Vilonti-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F14909B4B07D4C18A6F9DADF /* Vilonti-MediumItalic.ttf */; };
 		94F6B3E99D8344309F088134 /* Vilonti-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF12B75DE9BF4605AF89C4DF /* Vilonti-Regular.ttf */; };
-		3E3725700F8F4D2AA30C02AD /* Vilonti-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C166C86C7E7048ABAAEAE487 /* Vilonti-Thin.ttf */; };
-		3B55F564C65D466788265C32 /* Vilonti-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 79080CFEAEF14C2CB07BBD26 /* Vilonti-ThinItalic.ttf */; };
+		96905EF65AED1B983A6B3ABC /* libPods-VoyonApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-VoyonApp.a */; };
+		98CF5732356344E98D835000 /* Vilonti-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 58E701A679F14E9BB43CB037 /* Vilonti-MediumItalic.otf */; };
+		9EB55E37DC704A36A7589366 /* Vilonti-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B6A65B9DDF747AB90A5E5D4 /* Vilonti-Bold.otf */; };
+		A1419DC8EE184A7FBD15B676 /* Vilonti-ExtraBlack.otf in Resources */ = {isa = PBXBuildFile; fileRef = D57DCF8ADEE14698A0C22788 /* Vilonti-ExtraBlack.otf */; };
+		A5EB6AA7CF514FDEA70DC419 /* Vilonti-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = B8EF8DC860E045A1BC93E6EC /* Vilonti-Thin.otf */; };
+		A658C56337BA4AD6B64180DE /* Vilonti-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49A9A41E4DC24F6B875CA4A6 /* Vilonti-Italic.ttf */; };
+		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
+		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		C0076F61327A4F27814DE53A /* Vilonti-ExtraBlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE7E9A9BBD744D8CAEC34F4C /* Vilonti-ExtraBlackItalic.ttf */; };
+		C47876A92D7609F100E778DF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C47876A82D7609F100E778DF /* GoogleService-Info.plist */; };
+		C47876AC2D760D5500E778DF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = C47876AB2D760D5500E778DF /* FirebaseAnalytics */; };
+		C47876AE2D760D5500E778DF /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = C47876AD2D760D5500E778DF /* FirebaseAnalyticsOnDeviceConversion */; };
+		C47876B02D760D5500E778DF /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = C47876AF2D760D5500E778DF /* FirebaseAnalyticsWithoutAdIdSupport */; };
+		C47876B22D760D5500E778DF /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = C47876B12D760D5500E778DF /* FirebaseAppCheck */; };
+		C47876B42D760D5500E778DF /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = C47876B32D760D5500E778DF /* FirebaseAppDistribution-Beta */; };
+		E75C309D9673440490470F7A /* Vilonti-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0AC2FDFD4A0E440494239A7E /* Vilonti-Medium.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0AC2FDFD4A0E440494239A7E /* Vilonti-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Medium.otf"; path = "../assets/fonts/Vilonti-Medium.otf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* VoyonApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VoyonApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = VoyonApp/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = VoyonApp/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = VoyonApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = VoyonApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = VoyonApp/main.m; sourceTree = "<group>"; };
+		1935DA06406048AEA154BF44 /* Vilonti-ExtraBlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-ExtraBlackItalic.otf"; path = "../assets/fonts/Vilonti-ExtraBlackItalic.otf"; sourceTree = "<group>"; };
+		23D171A0F5D44A2F84D8A9A5 /* Vilonti-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-BoldItalic.ttf"; path = "../assets/fonts/Vilonti-BoldItalic.ttf"; sourceTree = "<group>"; };
+		296E72AB3023427D8762622B /* Vilonti-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-ThinItalic.otf"; path = "../assets/fonts/Vilonti-ThinItalic.otf"; sourceTree = "<group>"; };
+		3EEE9C3E12FC4AFF9C92CB09 /* Vilonti-Italic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Italic.otf"; path = "../assets/fonts/Vilonti-Italic.otf"; sourceTree = "<group>"; };
+		49A9A41E4DC24F6B875CA4A6 /* Vilonti-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Italic.ttf"; path = "../assets/fonts/Vilonti-Italic.ttf"; sourceTree = "<group>"; };
+		521EC03A4C9049FD9C810DFC /* Vilonti-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Regular.otf"; path = "../assets/fonts/Vilonti-Regular.otf"; sourceTree = "<group>"; };
+		58E701A679F14E9BB43CB037 /* Vilonti-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-MediumItalic.otf"; path = "../assets/fonts/Vilonti-MediumItalic.otf"; sourceTree = "<group>"; };
 		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-VoyonApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VoyonApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C2E3173556A471DD304B334 /* Pods-VoyonApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VoyonApp.debug.xcconfig"; path = "Target Support Files/Pods-VoyonApp/Pods-VoyonApp.debug.xcconfig"; sourceTree = "<group>"; };
+		76791CC85DA54F55BFDE0D07 /* Vilonti-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-BoldItalic.otf"; path = "../assets/fonts/Vilonti-BoldItalic.otf"; sourceTree = "<group>"; };
+		78D3C2E948CF41B396E2AEC0 /* Vilonti-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Medium.ttf"; path = "../assets/fonts/Vilonti-Medium.ttf"; sourceTree = "<group>"; };
+		79080CFEAEF14C2CB07BBD26 /* Vilonti-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-ThinItalic.ttf"; path = "../assets/fonts/Vilonti-ThinItalic.ttf"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-VoyonApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VoyonApp.release.xcconfig"; path = "Target Support Files/Pods-VoyonApp/Pods-VoyonApp.release.xcconfig"; sourceTree = "<group>"; };
+		8B6A65B9DDF747AB90A5E5D4 /* Vilonti-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Bold.otf"; path = "../assets/fonts/Vilonti-Bold.otf"; sourceTree = "<group>"; };
+		94D7FE7A4FC44F46A89E8FC9 /* Vilonti-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Bold.ttf"; path = "../assets/fonts/Vilonti-Bold.ttf"; sourceTree = "<group>"; };
+		A46E7A71EFD3446FB7E8788D /* Vilonti-ExtraBlack.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-ExtraBlack.ttf"; path = "../assets/fonts/Vilonti-ExtraBlack.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = VoyonApp/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B8EF8DC860E045A1BC93E6EC /* Vilonti-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Thin.otf"; path = "../assets/fonts/Vilonti-Thin.otf"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		C166C86C7E7048ABAAEAE487 /* Vilonti-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Thin.ttf"; path = "../assets/fonts/Vilonti-Thin.ttf"; sourceTree = "<group>"; };
+		C47876A82D7609F100E778DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D57DCF8ADEE14698A0C22788 /* Vilonti-ExtraBlack.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-ExtraBlack.otf"; path = "../assets/fonts/Vilonti-ExtraBlack.otf"; sourceTree = "<group>"; };
+		DE7E9A9BBD744D8CAEC34F4C /* Vilonti-ExtraBlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-ExtraBlackItalic.ttf"; path = "../assets/fonts/Vilonti-ExtraBlackItalic.ttf"; sourceTree = "<group>"; };
+		DF12B75DE9BF4605AF89C4DF /* Vilonti-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-Regular.ttf"; path = "../assets/fonts/Vilonti-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F14909B4B07D4C18A6F9DADF /* Vilonti-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Vilonti-MediumItalic.ttf"; path = "../assets/fonts/Vilonti-MediumItalic.ttf"; sourceTree = "<group>"; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-VoyonApp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		8B6A65B9DDF747AB90A5E5D4 /* Vilonti-Bold.otf */ = {isa = PBXFileReference; name = "Vilonti-Bold.otf"; path = "../assets/fonts/Vilonti-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		76791CC85DA54F55BFDE0D07 /* Vilonti-BoldItalic.otf */ = {isa = PBXFileReference; name = "Vilonti-BoldItalic.otf"; path = "../assets/fonts/Vilonti-BoldItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D57DCF8ADEE14698A0C22788 /* Vilonti-ExtraBlack.otf */ = {isa = PBXFileReference; name = "Vilonti-ExtraBlack.otf"; path = "../assets/fonts/Vilonti-ExtraBlack.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		1935DA06406048AEA154BF44 /* Vilonti-ExtraBlackItalic.otf */ = {isa = PBXFileReference; name = "Vilonti-ExtraBlackItalic.otf"; path = "../assets/fonts/Vilonti-ExtraBlackItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3EEE9C3E12FC4AFF9C92CB09 /* Vilonti-Italic.otf */ = {isa = PBXFileReference; name = "Vilonti-Italic.otf"; path = "../assets/fonts/Vilonti-Italic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		0AC2FDFD4A0E440494239A7E /* Vilonti-Medium.otf */ = {isa = PBXFileReference; name = "Vilonti-Medium.otf"; path = "../assets/fonts/Vilonti-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		58E701A679F14E9BB43CB037 /* Vilonti-MediumItalic.otf */ = {isa = PBXFileReference; name = "Vilonti-MediumItalic.otf"; path = "../assets/fonts/Vilonti-MediumItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		521EC03A4C9049FD9C810DFC /* Vilonti-Regular.otf */ = {isa = PBXFileReference; name = "Vilonti-Regular.otf"; path = "../assets/fonts/Vilonti-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B8EF8DC860E045A1BC93E6EC /* Vilonti-Thin.otf */ = {isa = PBXFileReference; name = "Vilonti-Thin.otf"; path = "../assets/fonts/Vilonti-Thin.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		296E72AB3023427D8762622B /* Vilonti-ThinItalic.otf */ = {isa = PBXFileReference; name = "Vilonti-ThinItalic.otf"; path = "../assets/fonts/Vilonti-ThinItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		94D7FE7A4FC44F46A89E8FC9 /* Vilonti-Bold.ttf */ = {isa = PBXFileReference; name = "Vilonti-Bold.ttf"; path = "../assets/fonts/Vilonti-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		23D171A0F5D44A2F84D8A9A5 /* Vilonti-BoldItalic.ttf */ = {isa = PBXFileReference; name = "Vilonti-BoldItalic.ttf"; path = "../assets/fonts/Vilonti-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A46E7A71EFD3446FB7E8788D /* Vilonti-ExtraBlack.ttf */ = {isa = PBXFileReference; name = "Vilonti-ExtraBlack.ttf"; path = "../assets/fonts/Vilonti-ExtraBlack.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		DE7E9A9BBD744D8CAEC34F4C /* Vilonti-ExtraBlackItalic.ttf */ = {isa = PBXFileReference; name = "Vilonti-ExtraBlackItalic.ttf"; path = "../assets/fonts/Vilonti-ExtraBlackItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		49A9A41E4DC24F6B875CA4A6 /* Vilonti-Italic.ttf */ = {isa = PBXFileReference; name = "Vilonti-Italic.ttf"; path = "../assets/fonts/Vilonti-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		78D3C2E948CF41B396E2AEC0 /* Vilonti-Medium.ttf */ = {isa = PBXFileReference; name = "Vilonti-Medium.ttf"; path = "../assets/fonts/Vilonti-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F14909B4B07D4C18A6F9DADF /* Vilonti-MediumItalic.ttf */ = {isa = PBXFileReference; name = "Vilonti-MediumItalic.ttf"; path = "../assets/fonts/Vilonti-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		DF12B75DE9BF4605AF89C4DF /* Vilonti-Regular.ttf */ = {isa = PBXFileReference; name = "Vilonti-Regular.ttf"; path = "../assets/fonts/Vilonti-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C166C86C7E7048ABAAEAE487 /* Vilonti-Thin.ttf */ = {isa = PBXFileReference; name = "Vilonti-Thin.ttf"; path = "../assets/fonts/Vilonti-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		79080CFEAEF14C2CB07BBD26 /* Vilonti-ThinItalic.ttf */ = {isa = PBXFileReference; name = "Vilonti-ThinItalic.ttf"; path = "../assets/fonts/Vilonti-ThinItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +84,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C47876AC2D760D5500E778DF /* FirebaseAnalytics in Frameworks */,
+				C47876AE2D760D5500E778DF /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 				96905EF65AED1B983A6B3ABC /* libPods-VoyonApp.a in Frameworks */,
+				C47876B22D760D5500E778DF /* FirebaseAppCheck in Frameworks */,
+				C47876B02D760D5500E778DF /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
+				C47876B42D760D5500E778DF /* FirebaseAppDistribution-Beta in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +106,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				C47876A82D7609F100E778DF /* GoogleService-Info.plist */,
 			);
 			name = VoyonApp;
 			sourceTree = "<group>";
@@ -105,6 +118,33 @@
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-VoyonApp.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8033EFE20BC84A2BBBCC2739 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8B6A65B9DDF747AB90A5E5D4 /* Vilonti-Bold.otf */,
+				76791CC85DA54F55BFDE0D07 /* Vilonti-BoldItalic.otf */,
+				D57DCF8ADEE14698A0C22788 /* Vilonti-ExtraBlack.otf */,
+				1935DA06406048AEA154BF44 /* Vilonti-ExtraBlackItalic.otf */,
+				3EEE9C3E12FC4AFF9C92CB09 /* Vilonti-Italic.otf */,
+				0AC2FDFD4A0E440494239A7E /* Vilonti-Medium.otf */,
+				58E701A679F14E9BB43CB037 /* Vilonti-MediumItalic.otf */,
+				521EC03A4C9049FD9C810DFC /* Vilonti-Regular.otf */,
+				B8EF8DC860E045A1BC93E6EC /* Vilonti-Thin.otf */,
+				296E72AB3023427D8762622B /* Vilonti-ThinItalic.otf */,
+				94D7FE7A4FC44F46A89E8FC9 /* Vilonti-Bold.ttf */,
+				23D171A0F5D44A2F84D8A9A5 /* Vilonti-BoldItalic.ttf */,
+				A46E7A71EFD3446FB7E8788D /* Vilonti-ExtraBlack.ttf */,
+				DE7E9A9BBD744D8CAEC34F4C /* Vilonti-ExtraBlackItalic.ttf */,
+				49A9A41E4DC24F6B875CA4A6 /* Vilonti-Italic.ttf */,
+				78D3C2E948CF41B396E2AEC0 /* Vilonti-Medium.ttf */,
+				F14909B4B07D4C18A6F9DADF /* Vilonti-MediumItalic.ttf */,
+				DF12B75DE9BF4605AF89C4DF /* Vilonti-Regular.ttf */,
+				C166C86C7E7048ABAAEAE487 /* Vilonti-Thin.ttf */,
+				79080CFEAEF14C2CB07BBD26 /* Vilonti-ThinItalic.ttf */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -172,34 +212,6 @@
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
-		8033EFE20BC84A2BBBCC2739 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				8B6A65B9DDF747AB90A5E5D4 /* Vilonti-Bold.otf */,
-				76791CC85DA54F55BFDE0D07 /* Vilonti-BoldItalic.otf */,
-				D57DCF8ADEE14698A0C22788 /* Vilonti-ExtraBlack.otf */,
-				1935DA06406048AEA154BF44 /* Vilonti-ExtraBlackItalic.otf */,
-				3EEE9C3E12FC4AFF9C92CB09 /* Vilonti-Italic.otf */,
-				0AC2FDFD4A0E440494239A7E /* Vilonti-Medium.otf */,
-				58E701A679F14E9BB43CB037 /* Vilonti-MediumItalic.otf */,
-				521EC03A4C9049FD9C810DFC /* Vilonti-Regular.otf */,
-				B8EF8DC860E045A1BC93E6EC /* Vilonti-Thin.otf */,
-				296E72AB3023427D8762622B /* Vilonti-ThinItalic.otf */,
-				94D7FE7A4FC44F46A89E8FC9 /* Vilonti-Bold.ttf */,
-				23D171A0F5D44A2F84D8A9A5 /* Vilonti-BoldItalic.ttf */,
-				A46E7A71EFD3446FB7E8788D /* Vilonti-ExtraBlack.ttf */,
-				DE7E9A9BBD744D8CAEC34F4C /* Vilonti-ExtraBlackItalic.ttf */,
-				49A9A41E4DC24F6B875CA4A6 /* Vilonti-Italic.ttf */,
-				78D3C2E948CF41B396E2AEC0 /* Vilonti-Medium.ttf */,
-				F14909B4B07D4C18A6F9DADF /* Vilonti-MediumItalic.ttf */,
-				DF12B75DE9BF4605AF89C4DF /* Vilonti-Regular.ttf */,
-				C166C86C7E7048ABAAEAE487 /* Vilonti-Thin.ttf */,
-				79080CFEAEF14C2CB07BBD26 /* Vilonti-ThinItalic.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -219,6 +231,13 @@
 			dependencies = (
 			);
 			name = VoyonApp;
+			packageProductDependencies = (
+				C47876AB2D760D5500E778DF /* FirebaseAnalytics */,
+				C47876AD2D760D5500E778DF /* FirebaseAnalyticsOnDeviceConversion */,
+				C47876AF2D760D5500E778DF /* FirebaseAnalyticsWithoutAdIdSupport */,
+				C47876B12D760D5500E778DF /* FirebaseAppCheck */,
+				C47876B32D760D5500E778DF /* FirebaseAppDistribution-Beta */,
+			);
 			productName = VoyonApp;
 			productReference = 13B07F961A680F5B00A75B9A /* VoyonApp.app */;
 			productType = "com.apple.product-type.application";
@@ -245,6 +264,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -276,6 +298,7 @@
 				4224A6AD57E145AD98F11704 /* Vilonti-BoldItalic.ttf in Resources */,
 				0229511DC3B44E0889FB899C /* Vilonti-ExtraBlack.ttf in Resources */,
 				C0076F61327A4F27814DE53A /* Vilonti-ExtraBlackItalic.ttf in Resources */,
+				C47876A92D7609F100E778DF /* GoogleService-Info.plist in Resources */,
 				A658C56337BA4AD6B64180DE /* Vilonti-Italic.ttf in Resources */,
 				83ECF41A341044B69C924F82 /* Vilonti-Medium.ttf in Resources */,
 				17E0A3AE83404077AE4F6B3A /* Vilonti-MediumItalic.ttf in Resources */,
@@ -377,7 +400,10 @@
 				);
 				INFOPLIST_FILE = VoyonApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -401,7 +427,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = VoyonApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -463,7 +492,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -512,7 +544,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					/usr/lib/swift,
+					"$(inherited)",
+				);
 				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -542,6 +577,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C47876AB2D760D5500E778DF /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		C47876AD2D760D5500E778DF /* FirebaseAnalyticsOnDeviceConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsOnDeviceConversion;
+		};
+		C47876AF2D760D5500E778DF /* FirebaseAnalyticsWithoutAdIdSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsWithoutAdIdSupport;
+		};
+		C47876B12D760D5500E778DF /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		C47876B32D760D5500E778DF /* FirebaseAppDistribution-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C47876AA2D760D5500E778DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAppDistribution-Beta";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
