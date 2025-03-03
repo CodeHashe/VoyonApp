@@ -1,7 +1,9 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
+
+const { width, height } = Dimensions.get("window"); // Get screen size
 
 export default function InputFields(props) {
-  const { InputFieldText } = props;
+  const { InputFieldText, value, onChangeText, onFocus } = props;
 
   return (
     <View style={styles.container}>
@@ -9,7 +11,11 @@ export default function InputFields(props) {
       <TextInput
         style={styles.inputField}
         placeholder="Type here..."
-        placeholderTextColor="#5A6B8C" // Lighter placeholder for better contrast
+        placeholderTextColor="#7A8CA8"
+        value={value}
+        onChangeText={onChangeText}
+        onFocus={onFocus}
+        returnKeyType="done"
       />
     </View>
   );
@@ -17,25 +23,26 @@ export default function InputFields(props) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 15, // Space between input fields
+    marginBottom: height * 0.02, // Increased margin for better spacing
+    width: "85%", // Make the input field wider
+    alignSelf: "center",
   },
-
   text: {
     fontFamily: "Vilonti-Bold",
-    fontSize: 16,
+    fontSize: width * 0.04, // Slightly increased text size
     color: "white",
-    marginBottom: 5, // Space between label and input
+    marginBottom: height * 0.007, // Adjusted spacing
   },
-
   inputField: {
-    width: 311,
-    height: 42,
-    borderRadius: 11,
-    backgroundColor: "#132143", // Matches your design
-    color: "white", // Text color inside the input
+    width: "90%", // Full width of container
+    height: height * 0.04, // Significantly increased height for better touch experience
+    borderRadius: width * 0.035, // More rounded corners
+    backgroundColor: "#132143",
+    color: "white",
     fontFamily: "Vilonti-Bold",
-    paddingLeft: 15, // Better spacing for text input
-    borderWidth: 1, // Slight border for depth
-    borderColor: "#5A6B8C", // Subtle border color
+    paddingHorizontal: width * 0.05, // More padding inside the input
+    borderWidth: 1.5, // Slightly thicker border
+    borderColor: "#5A6B8C",
+    fontSize: width * 0.04, // Slightly larger font size
   },
 });

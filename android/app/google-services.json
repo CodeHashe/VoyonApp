@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "344496715328",
+    "project_id": "voyon-acb5a",
+    "storage_bucket": "voyon-acb5a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344496715328:android:aa49461185eb89275851a5",
+        "android_client_info": {
+          "package_name": "com.voyonapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "344496715328-v6m1n7e4krennpfr5hl3m25ae1sthbni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoDVLTcp1V6sI8fZF8fZ0UK9DbeI5rSrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "344496715328-v6m1n7e4krennpfr5hl3m25ae1sthbni.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "344496715328-ufun9jfsutgt3nrpib70k439hbt6hrc4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.muhammadabdullahbajwa.VoyonApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
