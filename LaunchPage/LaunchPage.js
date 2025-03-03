@@ -1,7 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 import Buttons from "./Buttons";
-import  Ellipse  from "./Ellipse";
 
 export default function LaunchPage({navigation}) {
   return (
@@ -11,10 +10,10 @@ export default function LaunchPage({navigation}) {
             <Text style={styles.vilontiboldHeading}>Voyon</Text>
             <Text style={styles.vilontiboldBody}>Look First, Then Leap</Text>
         </View>
-        
+
       <View style={styles.buttonContainer}>
       <Buttons name="Log In" buttonFill="#2D54EE" textColor="#FFFFFF" onPress={() => navigation.navigate("SignIn")} />
-      <Buttons name="Sign Up" buttonFill="#06193F" textColor="#FFFFFF" onPress={() => navigation.navigate("SignUp")} />
+      <Buttons name="Sign Up" buttonFill="#06193F" textColor="#2D54EE" onPress={() => navigation.navigate("SignUp")} />
       </View>
     </View>
   );
@@ -28,8 +27,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   logo: {
-    height: 100,
-    width: 100,
+    height: 159,
+    width: 279,
     marginBottom: 10,
   },
   vilontiboldHeading: {
@@ -47,19 +46,26 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    height: "45%", // Increased size
+    height: "45%", 
     alignItems: "center",
   },
   curvedBackground: {
-    width: "140%", // Extending it beyond screen width
+    width: "140%", 
     height: "100%",
     resizeMode: "cover",
   },
   buttonContainer: {
+    width: "135%", // Make it wider for the elliptical effect
+    height: "30%", // Adjust height
+    backgroundColor: "#06193F",
     position: "absolute",
-    flexDirection: "column",  // Ensures buttons are stacked vertically
-    bottom:60,
-    alignItems: "center",     // Centers buttons horizontally
-    gap: 15,
+    bottom: 0,
+    alignItems: "center", // Center elements horizontally
+    justifyContent: "center", // Center elements vertically
+    flexDirection: "column",
+    borderTopLeftRadius: 300, // Maintain elliptical shape
+    borderTopRightRadius: 300,
+    overflow: "hidden",
+    gap:20
   },
 });

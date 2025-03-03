@@ -1,12 +1,12 @@
 import { View, Pressable, Text, StyleSheet, TouchableOpacity} from "react-native";
 
 export default function Buttons(props) {
-  const { name, buttonFill, textColor, onPress } = props;
+  const { name, buttonFill, textColor, onPress } = props; 
 
   return (
     <View>
-      <TouchableOpacity style={[styles.button, { backgroundColor: buttonFill }] } onPress = {onPress}>
-        <Text style={[styles.text, { color: textColor }]}>{name}</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: buttonFill, borderColor: "#2D54EE" }] } onPress = {onPress}>
+        <Text style={[styles.text, { color: textColor}]}>{name}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
     borderRadius: 22.5,
     justifyContent: "center",
     alignItems: "center",
-    borderColor:"#2D54EE"
+    borderColor: "#2D54EE",
+    borderWidth: 2, // Add this line
   },
 });
+
