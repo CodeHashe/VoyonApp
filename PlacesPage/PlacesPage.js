@@ -56,3 +56,42 @@ const yourPlacePage=() =>{
         </View>
       );
     };
+
+const styles = StyleSheet.create(
+    container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  textContainer: {
+    marginLeft: 10,
+  },
+  placeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  visitDate: {
+    fontSize: 14,
+    color: "#555",
+  },
+  email: {
+    fontSize: 14,
+    color: "#777",
+  },
+);
