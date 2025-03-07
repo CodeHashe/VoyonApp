@@ -28,7 +28,8 @@
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.9.1",
     "react-native-svg": "^15.11.2",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-vector-icons": "^10.2.0",
+    "voyonapp": "file:"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
