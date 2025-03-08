@@ -22,6 +22,8 @@ export default function App() {
       await Font.loadAsync({
         "Vilonti-Regular": require("./assets/fonts/Vilonti-Regular.ttf"),
         "Vilonti-Bold": require("./assets/fonts/Vilonti-Bold.ttf"),
+        "Vilonti-Black": require("./assets/fonts/Vilonti-ExtraBlack.ttf"),
+        "Vilonti-Medium":require("./assets/fonts/Vilonti-Medium.ttf")
       });
       setFontsLoaded(true);
     }
