@@ -52,7 +52,7 @@ const PlacesPage = () => {
     <View style={styles.container}>
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.back()}>
-          <Image source={require("../assets/icon.png")} style={styles.appIcon} />
+          <Image source={require("../assets/SignInlogo")} style={styles.appIcon} />
         </TouchableOpacity>
         <Text style={styles.header}>Your Visited Places</Text>
       </View>
