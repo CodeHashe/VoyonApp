@@ -1,11 +1,16 @@
 import React,{useEffect,useState} from "react";
 import { View,Text,FlatList,TouchableOpacity,StyleSheet,ActivityIndicator } from "react-native";
-import { useNavigation } from "expo-router";
-import {db,collection,getdocs}from "../firebaseConfig";
+import { useRouter } from "expo-router";
+import { getAuth } from "firebase/auth";
+import { getFirestore, getDocs, collection} from "firebase/firestore";
+import app from "../Firebase/firebaseConfig";
 
-const yourPlacePage=() =>{
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const navigation=useNavigation();
+const PlacesPage= () =>{
+
+    const navigation=useRouter();
     const[places,setPlaces]=useState([]);
     const[loading,setLoading]=useState([true]);
 
@@ -34,7 +39,7 @@ const yourPlacePage=() =>{
         <TouchableOpacity style={styles.card} onPress={() => navigation.push(`/places/${item.id}`)}>
           <View style={styles.textContainer}>
             <Text style={styles.placeName}>{item.location}</Text>
-            <Text style={styles.visitDate}>Visited On: {item.dateVisited}</Text>
+            <Text style={styles.visitDate}>Visited On: {item.DateVisited}</Text>
             <Text style={styles.email}>Email: {item.email}</Text>
           </View>
         </TouchableOpacity>
@@ -56,3 +61,45 @@ const yourPlacePage=() =>{
         </View>
       );
     };
+
+const styles = StyleSheet.create({
+    container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  textContainer: {
+    marginLeft: 10,
+  },
+  placeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  visitDate: {
+    fontSize: 14,
+    color: "#555",
+  },
+  email: {
+    fontSize: 14,
+    color: "#777",
+  },
+}
+);
+
+export default PlacesPage;
