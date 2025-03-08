@@ -34,6 +34,7 @@ export default function SignInPage({ navigation }) {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      navigation.navigate("Places");
     } catch (error) {
       Alert.alert("Login Failed", error.message);
     }
