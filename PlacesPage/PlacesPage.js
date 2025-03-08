@@ -50,7 +50,6 @@ const PlacesPage = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Navigation Bar */}
       <View style={styles.topBar}>
         <TouchableOpacity onPress={() => navigation.back()}>
           <Image source={require("../assets/icon.png")} style={styles.appIcon} />
@@ -58,7 +57,7 @@ const PlacesPage = () => {
         <Text style={styles.header}>Your Visited Places</Text>
       </View>
 
-      {/* Places List */}
+      
       <FlatList 
         data={places} 
         keyExtractor={(item) => item.id} 
