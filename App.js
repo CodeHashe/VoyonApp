@@ -11,7 +11,7 @@ import SignUpScreen from "./SignUpPage/SignUpPage.js";
 import AccountsPage from './AccountsPage/AccountsPage.js';
 import VerificationPage from './SignUpPage/VerificationPage.js';
 import PlacesPage from "./PlacesPage/PlacesPage.js";
-import ActivitesPage from './ActivitiesPage/activities.js';
+import ActivitesPage from "./ActivitiesPage/activities.js";
 
 const Stack = createStackNavigator();
 
