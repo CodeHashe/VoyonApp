@@ -93,7 +93,7 @@ export default function App() {
         "Vilonti-Regular": require("./assets/fonts/Vilonti-Regular.ttf"),
         "Vilonti-Bold": require("./assets/fonts/Vilonti-Bold.ttf"),
         "Vilonti-Black": require("./assets/fonts/Vilonti-ExtraBlack.ttf"),
-        "Vilonti-Medium":require("./assets/fonts/Vilonti-Medium.ttf")
+        "Vilonti-Medium": require("./assets/fonts/Vilonti-Medium.ttf"),
       });
       setFontsLoaded(true);
     }
@@ -104,31 +104,34 @@ export default function App() {
       console.log("Auth State Changed:", authenticatedUser);
       setUser(authenticatedUser);
     });
-  
+
     return () => unsubscribe();
   }, []);
 
   if (!fontsLoaded) {
-    return <View style={styles.loadingContainer}><Text>Loading Fonts...</Text></View>; 
+    return <View style={styles.loadingContainer}><Text>Loading Fonts...</Text></View>;
   }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Launch"  
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Launch" component={LaunchPage} />
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Accounts" component={AccountsPage}/>
-        <Stack.Screen name = "Verification" component={VerificationPage}/>
-        <Stack.Screen name = "Places" component={PlacesPage}/>
-       
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user ? (
+          // If user is logged in, show the bottom tabs
+          <Stack.Screen name="AppTabs" component={AppTabs} />
+        ) : (
+          // Otherwise, show authentication screens
+          <>
+            <Stack.Screen name="Launch" component={LaunchPage} />
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="Verification" component={VerificationPage} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
 
 // ✅ **Styles**
 const styles = StyleSheet.create({
