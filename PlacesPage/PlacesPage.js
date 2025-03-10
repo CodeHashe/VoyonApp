@@ -12,7 +12,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const apiKey = "AIzaSyCl5789zj3p9xmf4EodiBhOE7wwJBUhrII";
 
-// Function to get the Place ID
+
 const fetchPlaceID = async (placeName) => {
   try {
     const response = await fetch(
@@ -21,11 +21,11 @@ const fetchPlaceID = async (placeName) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Goog-Api-Key": apiKey, // ✅ Correct way to send API key
-          "X-Goog-FieldMask": "places.id", // ✅ Optimize response
+          "X-Goog-Api-Key": apiKey, 
+          "X-Goog-FieldMask": "places.id", 
         },
         body: JSON.stringify({
-          textQuery: placeName, // ✅ Correct request payload
+          textQuery: placeName, 
         }),
       }
     );
@@ -33,7 +33,7 @@ const fetchPlaceID = async (placeName) => {
     const result = await response.json();
 
     if (result.places && result.places.length > 0) {
-      return result.places[0].id; // ✅ Correct way to extract Place ID
+      return result.places[0].id; 
     } else {
       console.error("No place found for:", placeName);
       return null;
@@ -45,7 +45,6 @@ const fetchPlaceID = async (placeName) => {
 };
 
 
-// Function to get the Location Image using Place ID
 const fetchLocationImage = async (placeID) => {
   try {
     const response = await fetch(
@@ -71,7 +70,7 @@ const PlacesPage = () => {
   const navigation = useRouter();
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageCache, setImageCache] = useState({}); // To store images and prevent re-fetching
+  const [imageCache, setImageCache] = useState({}); 
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -178,7 +177,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
   },
   topBar: {
-    width: 203, // Fix incorrect string values
+    width: 203, 
     height: 65, 
     flexDirection: "row",
     alignItems: "center",  

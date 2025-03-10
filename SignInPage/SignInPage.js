@@ -1,4 +1,15 @@
-import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard, Platform, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  Alert,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import InputFields from "./InputFields";
 import Buttons from "../LaunchPage/Buttons";
@@ -17,8 +28,14 @@ export default function SignInPage({ navigation }) {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
-    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setKeyboardVisible(false)
+    );
 
     return () => {
       keyboardDidShowListener.remove();
@@ -44,12 +61,26 @@ export default function SignInPage({ navigation }) {
     <View style={{ flex: 1 }}>
       <AnimatedBackground style={styles.animatedBackground} />
 
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+          >
             <View style={styles.container}>
-              <View style={[styles.topLeftContainer, isKeyboardVisible && styles.topLeftContainerShift]}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+              <View
+                style={[
+                  styles.topLeftContainer,
+                  isKeyboardVisible && styles.topLeftContainerShift,
+                ]}
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={styles.backButton}
+                >
                   <Ionicons name="arrow-back-outline" size={24} color="white" />
                   <Text style={styles.backText}>Back</Text>
                 </TouchableOpacity>
@@ -57,20 +88,49 @@ export default function SignInPage({ navigation }) {
               </View>
 
               <View style={styles.inputFieldsContainer}>
-                <InputFields InputFieldText="Email" value={email} onChangeText={setEmail} />
-                <InputFields InputFieldText="Password" secureTextEntry value={password} onChangeText={setPassword} />
+                <InputFields
+                  InputFieldText="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <InputFields
+                  InputFieldText="Password"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
 
                 <View style={styles.loginButtonsContainer}>
-                  <Text style={[styles.loginButtons, { color: "#909AB1" }]}>Forgot your Password? </Text>
-                  <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>Click Here</Text>
+                  <Text style={[styles.loginButtons, { color: "white" }]}>
+                    Forgot your Password?{" "}
+                  </Text>
+                  <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>
+                    Click Here
+                  </Text>
                 </View>
                 <View style={styles.loginButtonsContainer}>
-                  <Text style={[styles.loginButtons, { color: "#909AB1" }]}>Don't have an account? </Text>
-                  <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>Sign Up</Text>
+                  <Text style={[styles.loginButtons, { color: "white" }]}>
+                    Don't have an account?{" "}
+                  </Text>
+                  <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>
+                    Sign Up
+                  </Text>
                 </View>
 
-                <Buttons name="Log In" buttonFill="#2D54EE" textColor="#FFFFFF" onPress={handleSignIn} />
-                <Buttons name="Sign In with Google" buttonFill="#2D54EE" textColor="#FFFFFF" onPress={() => Alert.alert("Google Sign-In not implemented yet!")} />
+                <Buttons
+                  name="Log In"
+                  buttonFill="#2D54EE"
+                  textColor="#FFFFFF"
+                  onPress={handleSignIn}
+                />
+                <Buttons
+                  name="Sign In with Google"
+                  buttonFill="#2D54EE"
+                  textColor="#FFFFFF"
+                  onPress={() =>
+                    Alert.alert("Google Sign-In not implemented yet!")
+                  }
+                />
               </View>
             </View>
           </ScrollView>
@@ -95,13 +155,14 @@ const styles = StyleSheet.create({
     left: -100,
     width: 300,
     height: 300,
-    backgroundColor: "rgba(45, 84, 238, 0.7)",
+    backgroundColor: "rgba(30, 60, 200, 1)", // Darker shade of blue
     borderRadius: 300,
     justifyContent: "center",
     paddingLeft: 120,
     paddingTop: 80,
     transition: "top 0.3s ease-in-out",
   },
+
   topLeftContainerShift: {
     top: -180,
   },

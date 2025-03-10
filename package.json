@@ -22,8 +22,13 @@
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.4.0",
     "react": "18.3.1",
+<<<<<<< HEAD
+    "react-native": "0.76.6",
+    "react-native-gesture-handler": "~2.20.2",
+=======
     "react-native": "0.76.7",
     "react-native-gesture-handler": "2.20.2",
+>>>>>>> a90bacf8d095581d2e4576248d54ec8faa99f5b9
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "4.12.0",

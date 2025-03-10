@@ -5,28 +5,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { auth } from "./Firebase/firebaseConfig";
 import * as Font from "expo-font"; 
-import { SvgUri } from "react-native-svg";
 
-
-import HomeIcon from "./assets/Home.svg"; 
-import RoutesIcon from "./assets/Route.svg";
-import ActivitiesIcon from "./assets/Activities.svg";
-import PlacesIcon from "./assets/Places.svg";
-import AccountIcon from "./assets/Accounts.svg";
-
-
-// Import Authentication Screens
-import LaunchPage from './LaunchPage/LaunchPage';
-import SignInScreen from "./SignInPage/SignInPage";
-import SignUpScreen from "./SignUpPage/SignUpPage";
-import VerificationPage from './SignUpPage/VerificationPage';
-
-// Import Main Screens
-import HomeScreen from "./HomePage/HomePage";
-import RoutesScreen from "./RoutesPage/RoutesPage";
-import ActivitiesScreen from "./ActivitiesPage/ActivitiesPage";
-import PlacesPage from "./PlacesPage/PlacesPage";
-import AccountsPage from './AccountsPage/AccountsPage';
+import LaunchPage from './LaunchPage/LaunchPage.js';
+import SignInScreen from "./SignInPage/SignInPage.js";
+import SignUpScreen from "./SignUpPage/SignUpPage.js";
+import AccountsPage from './AccountsPage/AccountsPage.js';
+import VerificationPage from './SignUpPage/VerificationPage.js';
+import PlacesPage from "./PlacesPage/PlacesPage.js";
 
 // Create Navigators
 const Stack = createStackNavigator();
@@ -114,19 +99,17 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          // ✅ If user is signed in, show the Bottom Tabs
-          <Stack.Screen name="MainApp" component={AppTabs} />
-        ) : (
-          // ✅ If user is NOT signed in, show authentication screens
-          <>
-            <Stack.Screen name="Launch" component={LaunchPage} />
-            <Stack.Screen name="SignIn" component={SignInScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Verification" component={VerificationPage} />
-          </>
-        )}
+      <Stack.Navigator 
+        initialRouteName="Launch"  
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="Launch" component={LaunchPage} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Accounts" component={AccountsPage}/>
+        <Stack.Screen name = "Verification" component={VerificationPage}/>
+        <Stack.Screen name = "Places" component={PlacesPage}/>
+       
       </Stack.Navigator>
     </NavigationContainer>
   );
