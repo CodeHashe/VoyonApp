@@ -58,11 +58,13 @@ export default function SignUpPage({ navigation }) {
 
       await sendEmailVerification(user); // Send verification email
 
-      alert("Sign-up successful! Please verify your email.");
-      navigation.navigate("Verification", { uid: user.uid }); // Pass only UID
-    } catch (error) {
-      alert(error.message);
-    }
+          alert("Sign-up successful! Please verify your email.");
+          //navigation.navigate("Verification", { uid: user.uid }); // Pass only UID
+          navigation.navigate("Places");
+
+      } catch (error) {
+          alert(error.message);
+      }
   };
 
   return (

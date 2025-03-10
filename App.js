@@ -10,6 +10,8 @@ import SignInScreen from "./SignInPage/SignInPage.js";
 import SignUpScreen from "./SignUpPage/SignUpPage.js";
 import AccountsPage from './AccountsPage/AccountsPage.js';
 import VerificationPage from './SignUpPage/VerificationPage.js';
+import PlacesPage from "./PlacesPage/PlacesPage.js";
+
 
 const Stack = createStackNavigator();
 
@@ -21,6 +23,8 @@ export default function App() {
       await Font.loadAsync({
         "Vilonti-Regular": require("./assets/fonts/Vilonti-Regular.ttf"),
         "Vilonti-Bold": require("./assets/fonts/Vilonti-Bold.ttf"),
+        "Vilonti-Black": require("./assets/fonts/Vilonti-ExtraBlack.ttf"),
+        "Vilonti-Medium":require("./assets/fonts/Vilonti-Medium.ttf")
       });
       setFontsLoaded(true);
     }
@@ -44,6 +48,9 @@ export default function App() {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Accounts" component={AccountsPage}/>
         <Stack.Screen name = "Verification" component={VerificationPage}/>
+        <Stack.Screen name = "Places" component={PlacesPage}/>
+        
+       
       </Stack.Navigator>
     </NavigationContainer>
   );
