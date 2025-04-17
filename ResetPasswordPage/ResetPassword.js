@@ -1,5 +1,3 @@
-
-
 import {
     View,
     Text,
@@ -11,7 +9,7 @@ import {
     Keyboard,
     Platform,
     Alert,
-    Dimensions,
+    Dimensions
   } from "react-native";
   import { useState } from "react";
   import Ionicons from "react-native-vector-icons/Ionicons";

@@ -6,7 +6,6 @@ import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "fir
 import InputFields from "./InputFields";
 import Buttons from "../LaunchPage/Buttons";
 import AnimatedBackground from "../AnimatedBackground";
-import { getAuth, signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider} from "firebase/auth";
 import app from "../Firebase/firebaseConfig"; 
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
