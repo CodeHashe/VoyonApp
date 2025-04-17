@@ -1,47 +1,42 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Platform,
-  Alert,
-} from "react-native";
+import {View,Text, StyleSheet,TouchableOpacity, ScrollView, Alert} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import InputFields from "./InputFields";
 import Buttons from "../LaunchPage/Buttons";
 import { Dimensions } from "react-native";
 import { useState, useEffect } from "react";
 import AnimatedBackground from "../AnimatedBackground";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import app from "../Firebase/firebaseConfig"; // Ensure correct Firebase config path
+import { getAuth, signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider} from "firebase/auth";
+import app from "../Firebase/firebaseConfig"; 
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
+
+const redirectUri = AuthSession.makeRedirectUri({ useProxy: false });
+
+console.log(redirectUri);
 
 const auth = getAuth(app);
 const { width, height } = Dimensions.get("window");
 
 export default function SignInPage({ navigation }) {
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [request, response, promptasync] = Google.useAuthRequest({
+    expoClientId: '681290823433-388l3jr5u5sp53hj19v4j24m5qk4gjdq.apps.googleusercontent.com',
+    webClientId: '681290823433-enrei6ai0ctqj1o70tti2pk2ferru5ek.apps.googleusercontent.com',
+    androidClientId: '681290823433-n00q8lt67ebe6mlf9qvto2pdopfm0m2f.apps.googleusercontent.com',
+    iosClientId: '681290823433-fubkf2oj7hjc3hnvn86gt239olbel44q.apps.googleusercontent.com',
+    redirectUri, 
+  });
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => setKeyboardVisible(true)
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => setKeyboardVisible(false)
-    );
 
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  useEffect(()=>{
+      if (response?.type === 'success'){
+        const {id_token} = response.params;
+        const credential = GoogleAuthProvider.credential(id_token);
+        signInWithCredential(auth, credential);
+      }
+  }, [response]);
 
   const handleSignIn = async () => {
     if (!email || !password) {
@@ -60,21 +55,13 @@ export default function SignInPage({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
       <AnimatedBackground style={styles.animatedBackground} />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
           >
             <View style={styles.container}>
               <View
                 style={[
-                  styles.topLeftContainer,
-                  isKeyboardVisible && styles.topLeftContainerShift,
+                  styles.topLeftContainer
                 ]}
               >
                 <TouchableOpacity
@@ -127,15 +114,11 @@ export default function SignInPage({ navigation }) {
                   name="Sign In with Google"
                   buttonFill="#2D54EE"
                   textColor="#FFFFFF"
-                  onPress={() =>
-                    Alert.alert("Google Sign-In not implemented yet!")
-                  }
+                  onPress={() => promptasync({ useProxy: true })}
                 />
               </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
     </View>
   );
 }

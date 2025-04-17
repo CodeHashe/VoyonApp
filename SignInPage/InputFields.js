@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 const { width, height } = Dimensions.get("window"); // Get screen size
 
 export default function InputFields(props) {
-  const { InputFieldText, value, onChangeText, onFocus } = props;
+  const { InputFieldText, value, onChangeText} = props;
 
   return (
     <View style={styles.container}>
@@ -14,7 +14,6 @@ export default function InputFields(props) {
         placeholderTextColor="#7A8CA8"
         value={value}
         onChangeText={onChangeText}
-        onFocus={onFocus}
         returnKeyType="done"
       />
     </View>

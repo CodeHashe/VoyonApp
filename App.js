@@ -15,24 +15,20 @@ import PlacesIcon from "./assets/Places.svg";
 import AccountIcon from "./assets/Accounts.svg";
 
 
-// Import Authentication Screens
 import LaunchPage from './LaunchPage/LaunchPage';
 import SignInScreen from "./SignInPage/SignInPage";
 import SignUpScreen from "./SignUpPage/SignUpPage";
 import VerificationPage from './SignUpPage/VerificationPage';
 
-// Import Main Screens
 import HomeScreen from "./HomePage/HomePage";
 import RoutesScreen from "./RoutesPage/RoutesPage";
 import ActivitiesScreen from "./ActivitiesPage/ActivitiesPage";
 import PlacesPage from "./PlacesPage/PlacesPage";
 import AccountsPage from './AccountsPage/AccountsPage';
 
-// Create Navigators
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// ✅ **Custom Bottom Tab Navigator**
 function CustomTabBar({ state, descriptors, navigation }) {
   const icons = {
     Home: <HomeIcon width={24} height={24} />,
@@ -66,7 +62,6 @@ function CustomTabBar({ state, descriptors, navigation }) {
 }
 
 
-// ✅ **Bottom Tabs for After Login**
 function AppTabs() {
   return (
     <Tab.Navigator
@@ -82,10 +77,10 @@ function AppTabs() {
   );
 }
 
-// ✅ **Main Stack Navigator (Handles Auth + Tabs)**
+
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [user, setUser] = useState(null); // Track user authentication
+  const [user, setUser] = useState(null); 
 
   useEffect(() => {
     async function loadFonts() {
@@ -99,7 +94,7 @@ export default function App() {
     }
     loadFonts();
 
-    // Listen for authentication state changes
+    
     const unsubscribe = auth.onAuthStateChanged((authenticatedUser) => {
       console.log("Auth State Changed:", authenticatedUser);
       setUser(authenticatedUser);
@@ -116,10 +111,10 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          // If user is logged in, show the bottom tabs
+          
           <Stack.Screen name="AppTabs" component={AppTabs} />
         ) : (
-          // Otherwise, show authentication screens
+          
           <>
             <Stack.Screen name="Launch" component={LaunchPage} />
             <Stack.Screen name="SignIn" component={SignInScreen} />
@@ -133,7 +128,7 @@ export default function App() {
 }
 
 
-// ✅ **Styles**
+
 const styles = StyleSheet.create({
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   tabBarContainer: {
