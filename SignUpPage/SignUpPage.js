@@ -70,12 +70,6 @@ export default function SignUpPage({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
       <AnimatedBackground style={styles.animatedBackground} />
-      <KeyboardAvoidingView
-        behavior={
-          Platform.OS === "ios" || Platform.OS === "android" ? "none" : "none"
-        }
-        style={{ flex: 1 }}
-      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
@@ -153,7 +147,6 @@ export default function SignUpPage({ navigation }) {
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
     </View>
   );
 }
