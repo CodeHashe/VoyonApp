@@ -1,5 +1,4 @@
-import {View,Text, StyleSheet,TouchableOpacity, ScrollView, Alert  Dimensions,
-} from "react-native";
+import {View,Text, StyleSheet,TouchableOpacity, ScrollView, Alert, Dimensions} from "react-native";
 import { useState, useEffect } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
