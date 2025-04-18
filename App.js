@@ -8,6 +8,8 @@ import * as Font from "expo-font";
 import { SvgUri } from "react-native-svg";
 
 
+
+
 import HomeIcon from "./assets/Home.svg"; 
 import RoutesIcon from "./assets/Route.svg";
 import ActivitiesIcon from "./assets/Activities.svg";
@@ -15,16 +17,28 @@ import PlacesIcon from "./assets/Places.svg";
 import AccountIcon from "./assets/Accounts.svg";
 
 
+
+
+
+
 import LaunchPage from './LaunchPage/LaunchPage';
 import SignInScreen from "./SignInPage/SignInPage";
 import SignUpScreen from "./SignUpPage/SignUpPage";
 import VerificationPage from './SignUpPage/VerificationPage';
+import ResetPasswordPage from './ResetPasswordPage/ResetPassword';
+
+
+
 
 import HomeScreen from "./HomePage/HomePage";
 import RoutesScreen from "./RoutesPage/RoutesPage";
 import ActivitiesScreen from "./ActivitiesPage/ActivitiesPage";
 import PlacesPage from "./PlacesPage/PlacesPage";
 import AccountsPage from './AccountsPage/AccountsPage';
+
+
+
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -120,6 +134,9 @@ export default function App() {
             <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Verification" component={VerificationPage} />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordPage} />
+
+
           </>
         )}
       </Stack.Navigator>

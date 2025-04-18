@@ -1,11 +1,11 @@
-import {View,Text, StyleSheet,TouchableOpacity, ScrollView, Alert} from "react-native";
+import {View,Text, StyleSheet,TouchableOpacity, ScrollView, Alert, Dimensions} from "react-native";
+import { useState, useEffect } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+
 import InputFields from "./InputFields";
 import Buttons from "../LaunchPage/Buttons";
-import { Dimensions } from "react-native";
-import { useState, useEffect } from "react";
 import AnimatedBackground from "../AnimatedBackground";
-import { getAuth, signInWithEmailAndPassword, signInWithCredential, GoogleAuthProvider} from "firebase/auth";
 import app from "../Firebase/firebaseConfig"; 
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
@@ -52,6 +52,8 @@ export default function SignInPage({ navigation }) {
     }
   };
 
+
+
   return (
     <View style={{ flex: 1 }}>
       <AnimatedBackground style={styles.animatedBackground} />
@@ -74,6 +76,7 @@ export default function SignInPage({ navigation }) {
                 <Text style={styles.vilontiBoldHeading}>Log In</Text>
               </View>
 
+              {/* Form Section */}
               <View style={styles.inputFieldsContainer}>
                 <InputFields
                   InputFieldText="Email"
@@ -87,19 +90,21 @@ export default function SignInPage({ navigation }) {
                   onChangeText={setPassword}
                 />
 
-                <View style={styles.loginButtonsContainer}>
-                  <Text style={[styles.loginButtons, { color: "white" }]}>
-                    Forgot your Password?{" "}
-                  </Text>
-                  <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>
-                    Click Here
-                  </Text>
-                </View>
+                <TouchableOpacity onPress={() => navigation.navigate("ResetPassword")}>
+                <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>
+                Forgot your Password? Click Here
+                </Text>
+                 </TouchableOpacity>
+
+
                 <View style={styles.loginButtonsContainer}>
                   <Text style={[styles.loginButtons, { color: "white" }]}>
                     Don't have an account?{" "}
                   </Text>
-                  <Text style={[styles.loginButtons, { color: "#2D54EE" }]}>
+                  <Text
+                    style={[styles.loginButtons, { color: "#2D54EE" }]}
+                    onPress={() => navigation.navigate("SignUp")}
+                  >
                     Sign Up
                   </Text>
                 </View>
@@ -138,14 +143,12 @@ const styles = StyleSheet.create({
     left: -100,
     width: 300,
     height: 300,
-    backgroundColor: "rgba(30, 60, 200, 1)", // Darker shade of blue
+    backgroundColor: "rgba(30, 60, 200, 1)",
     borderRadius: 300,
     justifyContent: "center",
     paddingLeft: 120,
     paddingTop: 80,
-    transition: "top 0.3s ease-in-out",
   },
-
   topLeftContainerShift: {
     top: -180,
   },
@@ -159,14 +162,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     marginLeft: 5,
-  },
-  loginButtons: {
-    fontFamily: "Vilonti-Regular",
-    fontSize: 16,
-  },
-  loginButtonsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   vilontiBoldHeading: {
     fontFamily: "Vilonti-Bold",
@@ -188,6 +183,14 @@ const styles = StyleSheet.create({
     paddingBottom: height * 0.05,
     alignItems: "center",
     justifyContent: "center",
-    gap: "10",
+    gap: 10,
+  },
+  loginButtons: {
+    fontFamily: "Vilonti-Regular",
+    fontSize: 16,
+  },
+  loginButtonsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
