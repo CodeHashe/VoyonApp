@@ -1,4 +1,4 @@
-package com.voyonapp
+package com.anonymous.VoyonApp
 
 import android.os.Build
 import android.os.Bundle
