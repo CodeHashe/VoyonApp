@@ -26,6 +26,7 @@ import SignInScreen from "./SignInPage/SignInPage";
 import SignUpScreen from "./SignUpPage/SignUpPage";
 import VerificationPage from './SignUpPage/VerificationPage';
 import ResetPasswordPage from './ResetPasswordPage/ResetPassword';
+import RoutesByAirPage from './RoutesByAirPage/RoutesAir';
 
 
 
@@ -35,6 +36,9 @@ import RoutesScreen from "./RoutesPage/RoutesPage";
 import ActivitiesScreen from "./ActivitiesPage/ActivitiesPage";
 import PlacesPage from "./PlacesPage/PlacesPage";
 import AccountsPage from './AccountsPage/AccountsPage';
+import PlaceDetails from './HomePage/PlacesDetails';
+import CountryContainers from './HomePage/CountryContainers';
+import PopularCountriesPlaces from './HomePage/PopularCountriesPlaces';
 
 
 
@@ -123,11 +127,13 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          
-          <Stack.Screen name="AppTabs" component={AppTabs} />
-        ) : (
+     <Stack.Navigator screenOptions={{ headerShown: false }}>
+  {user ? (
+    <>
+      <Stack.Screen name="AppTabs" component={AppTabs} />
+      <Stack.Screen name="RoutesByAirPage" component={RoutesByAirPage} />
+    </>
+  ) : (
           
           <>
             <Stack.Screen name="Launch" component={LaunchPage} />
@@ -139,6 +145,11 @@ export default function App() {
 
           </>
         )}
+        <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
+        <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
+        <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );

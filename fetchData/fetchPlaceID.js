@@ -1,4 +1,4 @@
-const fetchPlaceID = async (placeName, apiKey) => {
+export default async function fetchPlaceID(placeName, apiKey){
     try {
       const response = await fetch(
         "https://places.googleapis.com/v1/places:searchText",

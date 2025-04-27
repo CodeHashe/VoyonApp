@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,10 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { getAuth } from "firebase/auth";
+import app from "../Firebase/firebaseConfig";
+
+const auth = getAuth(app);
 
 const initialActivities = [
   { id: '1', name: 'Sky Diving', image: require('../assets/skydiving.jpg') },
@@ -21,6 +25,25 @@ const initialActivities = [
 
 const PlacesSubPage = () => {
   const [activities, setActivities] = useState(initialActivities);
+
+
+  useEffect(() => {
+
+
+    const user = auth.currentUser;
+
+    
+
+
+
+
+
+
+
+
+  });
+
+
 
   const handleDelete = (id) => {
     setActivities((prevActivities) =>

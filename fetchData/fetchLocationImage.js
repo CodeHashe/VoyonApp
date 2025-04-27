@@ -1,4 +1,4 @@
-const fetchLocationImage = async (placeID, apiKey) => {
+export default async function fetchLocationImage(placeID, apiKey){
     try {
       const response = await fetch(
         `https://places.googleapis.com/v1/places/${placeID}?fields=photos&key=${apiKey}`
