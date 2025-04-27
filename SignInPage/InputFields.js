@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 const { width, height } = Dimensions.get("window"); // Get screen size
 
 export default function InputFields(props) {
-  const { InputFieldText, value, onChangeText} = props;
+  const { InputFieldText, value, onChangeText, secureTextEntry } = props;
 
   return (
     <View style={styles.container}>
@@ -15,6 +15,7 @@ export default function InputFields(props) {
         value={value}
         onChangeText={onChangeText}
         returnKeyType="done"
+        secureTextEntry={secureTextEntry}
       />
     </View>
   );
@@ -22,7 +23,7 @@ export default function InputFields(props) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: height * 0.01, // Increased margin for better spacing
+    marginBottom: height * 0.02, // Increased margin for better spacing
     width: "80%", // Make the input field wider
     alignSelf: "flex-start", // Align towards the left
     marginLeft: "12%", // Move slightly to the right
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     fontFamily: "Vilonti-Bold",
     fontSize: width * 0.04, // Slightly increased text size
     color: "white",
-    marginBottom: height * 0.002, // Adjusted spacing
+    marginBottom: height * 0.005, // Adjusted spacing
     marginLeft: width * 0.02,
   },
   inputField: {
