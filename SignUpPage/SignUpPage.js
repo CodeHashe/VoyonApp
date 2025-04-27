@@ -1,26 +1,27 @@
+"use client";
+
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Platform,
+  Alert,
   Dimensions,
+  Platform,
 } from "react-native";
+import { useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import InputFields from "../SignInPage/InputFields";
-import Buttons from "../LaunchPage/Buttons";
-import { useState, useRef } from "react";
-import AnimatedBackground from "../AnimatedBackground";
 import { getFirestore, setDoc, doc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import InputFields from "../SignInPage/InputFields";
+import Buttons from "../LaunchPage/Buttons";
+import AnimatedBackground from "../AnimatedBackground";
 import app from "../Firebase/firebaseConfig";
 
 const auth = getAuth(app);
@@ -34,11 +35,10 @@ export default function SignUpPage({ navigation }) {
   const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const scrollRef = useRef(null);
 
   const handleSignUp = async () => {
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      Alert.alert("Error", "Passwords do not match!");
       return;
     }
     try {
@@ -56,110 +56,110 @@ export default function SignUpPage({ navigation }) {
         lastname,
       });
 
-      await sendEmailVerification(user); // Send verification email
-
-          alert("Sign-up successful! Please verify your email.");
-          //navigation.navigate("Verification", { uid: user.uid }); // Pass only UID
-          navigation.navigate("Places");
-
-      } catch (error) {
-          alert(error.message);
-      }
+      await sendEmailVerification(user);
+      Alert.alert("Success", "Sign-up successful! Please verify your email.");
+      navigation.navigate("Places");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <AnimatedBackground style={styles.animatedBackground} />
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            ref={scrollRef}
+
+      {/* Fixed top oval container */}
+      <View style={styles.topSection}>
+        <View style={styles.topLeftContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            <View style={styles.container}>
-              <View style={styles.topLeftContainer}>
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  style={styles.backButton}
-                >
-                  <Ionicons name="arrow-back-outline" size={24} color="white" />
-                  <Text style={styles.backText}>Back</Text>
-                </TouchableOpacity>
-                <Text style={styles.vilontiBoldHeading}>Sign Up</Text>
-              </View>
+            <Ionicons name="arrow-back-outline" size={24} color="white" />
+            <Text style={styles.backText}>Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.vilontiBoldHeading}>Sign Up</Text>
+        </View>
+      </View>
 
-              <View style={styles.inputFieldsContainer}>
-                <ScrollView
-                  contentContainerStyle={{
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "10",
-                  }}
-                >
-                  <InputFields
-                    InputFieldText="Enter your email"
-                    value={email}
-                    onChangeText={setEmail}
-                  />
-                  <InputFields
-                    InputFieldText="Enter a valid username"
-                    value={username}
-                    onChangeText={setUsername}
-                  />
-                  <InputFields
-                    InputFieldText="Enter your First Name"
-                    value={firstname}
-                    onChangeText={setFirstName}
-                  />
-                  <InputFields
-                    InputFieldText="Enter your Last Name"
-                    value={lastname}
-                    onChangeText={setLastName}
-                  />
-                  <InputFields
-                    InputFieldText="Enter a valid password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                  />
-                  <InputFields
-                    InputFieldText="Confirm Password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                  />
+      {/* Form section with KeyboardAwareScrollView */}
+      <View style={styles.bottomSection}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.scrollContent}
+          enableOnAndroid={true}
+          enableAutomaticScroll={Platform.OS === "ios"}
+          keyboardShouldPersistTaps="handled"
+          extraScrollHeight={Platform.OS === "ios" ? 20 : 0}
+          extraHeight={120}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+        >
+          <View style={styles.formContainer}>
+            <InputFields
+              InputFieldText="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <InputFields
+              InputFieldText="Enter a valid username"
+              value={username}
+              onChangeText={setUsername}
+            />
+            <InputFields
+              InputFieldText="Enter your First Name"
+              value={firstname}
+              onChangeText={setFirstName}
+            />
+            <InputFields
+              InputFieldText="Enter your Last Name"
+              value={lastname}
+              onChangeText={setLastName}
+            />
+            <InputFields
+              InputFieldText="Enter a valid password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <InputFields
+              InputFieldText="Confirm Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+            />
 
-                  <Buttons
-                    name="Sign Up"
-                    buttonFill="#2D54EE"
-                    textColor="#FFFFFF"
-                    onPress={handleSignUp}
-                  />
-                  <Buttons
-                    name="Sign Up with Google"
-                    buttonFill="#2D54EE"
-                    textColor="#FFFFFF"
-                    onPress={() => navigation.goBack()}
-                  />
-                </ScrollView>
-              </View>
-            </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
+            <Buttons
+              name="Sign Up"
+              buttonFill="#2D54EE"
+              textColor="#FFFFFF"
+              onPress={handleSignUp}
+            />
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
     </View>
   );
 }
-
+// Only the styles section needs to be updated
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent",
-    alignItems: "center",
+    backgroundColor: "#06193F",
   },
   animatedBackground: {
     ...StyleSheet.absoluteFillObject,
     zIndex: -1,
+  },
+  topSection: {
+    height: height * 0.3,
+    width: width,
+    position: "relative",
+    overflow: "visible", // Important to allow the oval to overflow
+  },
+  bottomSection: {
+    flex: 1,
+    backgroundColor: "rgba(6, 25, 63, 0.8)",
+    borderTopLeftRadius: width * 0.4,
+    borderTopRightRadius: width * 0.4,
   },
   topLeftContainer: {
     position: "absolute",
@@ -172,11 +172,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingLeft: 120,
     paddingTop: 80,
-    transition: "top 0.3s ease-in-out",
-  },
-
-  topLeftContainerShift: {
-    top: -180,
   },
   backButton: {
     flexDirection: "row",
@@ -194,18 +189,14 @@ const styles = StyleSheet.create({
     fontSize: width * 0.08,
     color: "#FFFFFF",
   },
-  inputFieldsContainer: {
-    width: width * 1.1,
-    height: height * 0.8,
-    backgroundColor: "rgba(6, 25, 63, 0.8)",
-    position: "absolute",
-    bottom: 0,
-    flexDirection: "column",
-    borderTopLeftRadius: width * 0.4,
-    borderTopRightRadius: width * 0.4,
-    overflow: "hidden",
-    alignSelf: "center",
-    paddingTop: height * 0.08,
+  scrollContent: {
+    flexGrow: 1,
+    paddingTop: 20,
+  },
+  formContainer: {
+    alignItems: "center",
+    paddingTop: height * 0.05,
     paddingBottom: height * 0.05,
+    gap: 10,
   },
 });

@@ -1,16 +1,27 @@
 {
   "expo": {
-    "scheme":"VoyonApp",
+    "scheme": "VoyonApp",
     "name": "VoyonApp",
     "slug": "VoyonApp",
     "version": "1.0.0",
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Voyon to use your location."
+
+        }
+      ]
+
     ],
     "extra": {
       "eas": {
         "projectId": "4be94255-c0dc-4665-b2f1-acead36c8fc0"
       }
+    },
+    "android": {
+      "package": "com.anonymous.VoyonApp"
     }
   }
 }

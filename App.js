@@ -36,6 +36,9 @@ import RoutesScreen from "./RoutesPage/RoutesPage";
 import ActivitiesScreen from "./ActivitiesPage/ActivitiesPage";
 import PlacesPage from "./PlacesPage/PlacesPage";
 import AccountsPage from './AccountsPage/AccountsPage';
+import PlaceDetails from './HomePage/PlacesDetails';
+import CountryContainers from './HomePage/CountryContainers';
+import PopularCountriesPlaces from './HomePage/PopularCountriesPlaces';
 
 
 
@@ -142,6 +145,11 @@ export default function App() {
 
           </>
         )}
+        <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
+        <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
+        <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );
