@@ -63,7 +63,7 @@ export default function HomePage({ navigation }) {
     const countryName = locationName.country;
 
     if (travelMode === 'driving') {
-      navigation.navigate('SearchByCarRoutes', {city, countryName, destination});
+      navigation.navigate('SearchByCarRoutes', {city, countryName, destination,apiKey});
     } else {
       navigation.navigate('SearchByAir', {city, countryName, destination});
     }

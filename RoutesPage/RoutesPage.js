@@ -15,14 +15,14 @@ import { getFirestore, getDocs, collection } from "firebase/firestore";
 import app from "../Firebase/firebaseConfig";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-// Initialize Firebase
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Google API Key
+
 const apiKey = "AIzaSyCl5789zj3p9xmf4EodiBhOE7wwJBUhrII";
 
-// Fetch Place ID
+
 const fetchPlaceID = async (placeName) => {
   try {
     const response = await fetch(
@@ -51,7 +51,7 @@ const fetchPlaceID = async (placeName) => {
   }
 };
 
-// Fetch Location Image
+
 const fetchLocationImage = async (placeID) => {
   try {
     const response = await fetch(
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 130,
     borderRadius: 25,
-    opacity: 0.8,   // ➡️ slight transparency like you asked
+    opacity: 0.8,   
   },
   routeTextContainer: {
     flex: 1,
