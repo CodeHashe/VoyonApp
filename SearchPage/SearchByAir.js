@@ -1,69 +1,257 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Calendar } from "react-native-calendars";
-
-
+import { View, Text, StyleSheet, TouchableOpacity, Platform, TextInput, Keyboard } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState, useRef } from 'react';
 
 const apiKey = "lfTJq6SXlQcxxoKq5EOzelOKwYpinL1b";
+const clientSecret = "EuAkeGU86wNLsVeR";
+const googleApiKey = "AIzaSyDfnOoS_Dk6JuEK7KeoqpKg-2XSudJ0mZo";
 
+export default function SearchByAir({ navigation, route }) {
+    const { city, countryName, destination } = route.params;
 
-export default function SearchByAir({navigation, route}){
-    const{city, countryName, destination} = route.params;
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [showStartPicker, setShowStartPicker] = useState(false);
+    const [showEndPicker, setShowEndPicker] = useState(false);
 
+    const [adults, setAdults] = useState('');
+    const [children, setChildren] = useState('');
+    const [infants, setInfants] = useState('');
 
+    const [step, setStep] = useState(0); // 0=departure date, 1=return date, 2=adults, 3=children, 4=infants
 
-    return(
+    const adultsRef = useRef(null);
+    const childrenRef = useRef(null);
+    const infantsRef = useRef(null);
 
+    const onChangeStart = (event, selectedDate) => {
+        const currentDate = selectedDate || startDate;
+        setShowStartPicker(false);
+        setStartDate(currentDate);
+    };
 
-        <View>
+    const onChangeEnd = (event, selectedDate) => {
+        const currentDate = selectedDate || endDate;
+        setShowEndPicker(false);
+        setEndDate(currentDate);
+    };
 
-        <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color="#000" />
+    const handleNext = () => {
+        if (step === 0) {
+            setShowStartPicker(true);
+        } else if (step === 1) {
+            setShowEndPicker(true);
+        } else if (step === 2) {
+            adultsRef.current?.focus();
+        } else if (step === 3) {
+            childrenRef.current?.focus();
+        } else if (step === 4) {
+            infantsRef.current?.focus();
+        }
+
+        if (step < 4) {
+            setStep(prev => prev + 1);
+        } else {
+            if (adults && children && infants) {
+                Keyboard.dismiss();
+                navigation.navigate('SearchByAirFlights', {
+                    apiKey,
+                    clientSecret,
+                    googleApiKey,
+                    destination,
+                    startDate: startDate.toISOString().split('T')[0],  // "2025-04-28"
+                    endDate: endDate.toISOString().split('T')[0], 
+                    adults,
+                    children,
+                    infants
+                });
+            }
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={24} color="#000" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Travel Details</Text>
+            </View>
+
+            <View style={styles.bubble}>
+                <Text style={styles.bubbleText}>
+                    Choose your dates and passengers travelling with you
+                </Text>
+            </View>
+
+            <View style={[styles.bubble, { height: 50, width: 100 }]}>
+                <Text style={styles.bubbleText}>
+                    Dates
+                </Text>
+            </View>
+
+            {/* Start Date Field */}
+            <View style={[styles.bubble, { height: 120, width: 300 }]}>
+                <Text style={styles.bubbleText}>Departure Date:</Text>
+                <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.dateButton}>
+                    <Text style={styles.dateButtonText}>{startDate.toDateString()}</Text>
+                </TouchableOpacity>
+
+                {showStartPicker && (
+                    <DateTimePicker
+                        value={startDate}
+                        mode="date"
+                        display="default"
+                        onChange={onChangeStart}
+                        minimumDate={new Date()}
+                    />
+                )}
+            </View>
+
+            {/* End Date Field */}
+            <View style={[styles.bubble, { height: 120, width: 300 }]}>
+                <Text style={styles.bubbleText}>Return Date:</Text>
+                <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateButton}>
+                    <Text style={styles.dateButtonText}>{endDate.toDateString()}</Text>
+                </TouchableOpacity>
+
+                {showEndPicker && (
+                    <DateTimePicker
+                        value={endDate}
+                        mode="date"
+                        display="default"
+                        onChange={onChangeEnd}
+                        minimumDate={startDate}
+                    />
+                )}
+            </View>
+
+            {/* Passenger Fields */}
+            <View style={styles.bubble}>
+                <Text style={styles.bubbleText}>Passengers</Text>
+
+                <TextInput
+                    ref={adultsRef}
+                    style={styles.input}
+                    placeholder="Number of Adults"
+                    placeholderTextColor="#999"
+                    keyboardType="numeric"
+                    value={adults}
+                    onChangeText={setAdults}
+                />
+                <TextInput
+                    ref={childrenRef}
+                    style={styles.input}
+                    placeholder="Number of Children"
+                    placeholderTextColor="#999"
+                    keyboardType="numeric"
+                    value={children}
+                    onChangeText={setChildren}
+                />
+                <TextInput
+                    ref={infantsRef}
+                    style={styles.input}
+                    placeholder="Number of Infants"
+                    placeholderTextColor="#999"
+                    keyboardType="numeric"
+                    value={infants}
+                    onChangeText={setInfants}
+                />
+            </View>
+
+            {/* Passenger Age Indication */}
+            <View style={[styles.bubble, { paddingVertical: 20 }]}>
+                <Text style={styles.ageNote}>
+                    Age Guide: {"\n"}
+                    Adult: 12+ years {"\n"}
+                    Child: 2-11 years {"\n"}
+                    Infant: Under 2 years
+                </Text>
+            </View>
+
+            {/* Floating Next Button */}
+            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+                <Ionicons name="arrow-forward" size={30} color="#FFFFFF" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Travel Details</Text>
         </View>
-
-
-
-            <Text>You are travelling to {destination} from {city} and {countryName} with apiKey {apiKey}</Text>
-
-
-        </View>
-
-
-
-    )
-
-
-
+    );
 }
 
-
 const styles = StyleSheet.create({
-
+    container: {
+        marginTop: 30,
+        marginLeft: 10,
+        flex: 1,
+        flexDirection: "column",
+        gap: 10,
+    },
     header: {
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 20,
-      },
-      headerTitle: {
+    },
+    headerTitle: {
         marginLeft: 10,
         fontSize: 16,
-        fontFamily:"Vilonti-Bold",
-        color: "#555",
-      },
-
-    
-
-
-
-
-
-
-
-
-
-
+        fontFamily: "Vilonti-Bold",
+        color: "#010F29",
+    },
+    bubble: {
+        width: 294,
+        backgroundColor: "#010F29",
+        borderRadius: 30,
+        alignSelf: "center",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 10,
+        marginVertical: 5,
+    },
+    bubbleText: {
+        fontFamily: "Vilonti-Bold",
+        fontSize: 18,
+        color: "#FFFFFF",
+        textAlign: "center",
+        marginBottom: 5,
+    },
+    dateButton: {
+        backgroundColor: "#ffffff",
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 12,
+    },
+    dateButtonText: {
+        color: "#010F29",
+        fontFamily: "Vilonti-Bold",
+    },
+    input: {
+        backgroundColor: "#ffffff",
+        width: 200,
+        height: 40,
+        borderRadius: 10,
+        marginTop: 8,
+        paddingHorizontal: 10,
+        fontFamily: "Vilonti-Bold",
+        color: "#010F29",
+        textAlign: "center",
+    },
+    ageNote: {
+        color: "#FFFFFF",
+        fontFamily: "Vilonti-Bold",
+        textAlign: "center",
+        fontSize: 14,
+        lineHeight: 22,
+    },
+    nextButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 20,
+        backgroundColor: '#010F29',
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
+    },
 });
-
-

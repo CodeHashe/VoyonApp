@@ -4,7 +4,7 @@ import {View, TouchableOpacity, Text, StyleSheet} from 'react-native'
 
 export default function SearchByCarRoutes({navigation, route}){
 
-    const   {city, countryName, destination} = route.params;
+    const   {city, countryName, destination, apiKey} = route.params;
 
 
     return(

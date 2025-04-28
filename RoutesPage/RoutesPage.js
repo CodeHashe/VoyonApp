@@ -20,7 +20,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Google API Key
-const apiKey = "AIzaSyCl5789zj3p9xmf4EodiBhOE7wwJBUhrII";
+const apiKey = "AIzaSyDfnOoS_Dk6JuEK7KeoqpKg-2XSudJ0mZo";
 
 // Fetch Place ID
 const fetchPlaceID = async (placeName) => {
