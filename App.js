@@ -38,6 +38,9 @@ import AccountsPage from './AccountsPage/AccountsPage';
 import PlaceDetails from './HomePage/PlacesDetails';
 import CountryContainers from './HomePage/CountryContainers';
 import PopularCountriesPlaces from './HomePage/PopularCountriesPlaces';
+import SearchByAir from './SearchPage/SearchByAir';
+import SearchByCar from './SearchPage/SearchByCar';
+import SearchByCarRoutes from './SearchPage/SearchByCarRoutes';
 
 
 
@@ -145,6 +148,9 @@ export default function App() {
         <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
         <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
         <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
+        <Stack.Screen name="SearchByAir" component={SearchByAir}/>
+        <Stack.Screen name="SearchByCar" component={SearchByCar}/>
+        <Stack.Screen name ="SearchByCarRoutes" component={SearchByCarRoutes}/>
         
 
       </Stack.Navigator>

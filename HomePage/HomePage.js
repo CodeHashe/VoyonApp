@@ -28,7 +28,7 @@ export default function HomePage({ navigation }) {
   const [currentlocImage, setcurrentlocImage] = useState(null);
   const [coords, setCoords] = useState({ latitude: null, longitude: null });
   const [destination, setDestination] = useState('');
-  const [travelMode, setTravelMode] = useState('driving'); // "driving" or "transit"
+  const [travelMode, setTravelMode] = useState('driving'); 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -53,102 +53,23 @@ export default function HomePage({ navigation }) {
     })();
   }, [locationName]);
 
-  async function handleSearch() {
-    console.log("🔍 handleSearch fired", { destination, travelMode });
-    // Debug; remove once it's working
-    // Alert.alert('Debug', `Searching for "${destination}" by ${travelMode}`);
-
-    try {
-      if (!destination.trim() || !coords.latitude) return;
-
-      // 1) Geocode the user-entered destination
-      const destEnc = encodeURIComponent(destination);
-      const geoRes = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${destEnc}&key=${apiKey}`
-      );
-      const geoJson = await geoRes.json();
-      if (!geoRes.ok || geoJson.status !== 'OK' || !geoJson.results.length) {
-        console.error("Geocode error:", geoJson);
-        Alert.alert('Error', 'Unable to locate destination.');
-        return;
-      }
-      const { lat, lng } = geoJson.results[0].geometry.location;
-
-      // 2) ComputeRouteMatrix call
-      const matrixRes = await fetch(
-        'https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': apiKey,
-            'X-Goog-FieldMask': 'originIndex,destinationIndex,distanceMeters,status'
-          },
-          body: JSON.stringify({
-            origins: [
-              {
-                waypoint: {
-                  location: {
-                    latLng: {
-                      latitude: coords.latitude,
-                      longitude: coords.longitude
-                    }
-                  }
-                }
-              }
-            ],
-            destinations: [
-              {
-                waypoint: {
-                  location: {
-                    latLng: { latitude: lat, longitude: lng }
-                  }
-                }
-              }
-            ],
-            travelMode: travelMode === 'driving' ? 'DRIVE' : 'TRANSIT'
-          })
-        }
-      );
-
-      if (!matrixRes.ok) {
-        const errorText = await matrixRes.text();
-        console.error("Matrix HTTP error:", matrixRes.status, errorText);
-        Alert.alert('Error', `Routing failed (${matrixRes.status})`);
-        return;
-      }
-
-      const matrixJson = await matrixRes.json();
-      // Your last console.log showed an array of elements:
-      // [ { originIndex:0, destinationIndex:0, distanceMeters:..., duration:"...", status:{} } ]
-
-      console.log(matrixJson);
-
-      if (!Array.isArray(matrixJson) || matrixJson.length === 0) {
-        console.error("Unexpected matrix response:", matrixJson);
-        Alert.alert('Error', 'No route returned.');
-        return;
-      }
-
-      const element = matrixJson[0];
-      // Treat an empty status object (no code field) as OK (code 0)
-      const statusObj = element.status || {};
-      const statusCode = typeof statusObj.code === 'number' ? statusObj.code : 0;
-
-      if (statusCode === 0) {
-        if (element.distanceMeters === 0) {
-          Alert.alert('Info', 'You are already at this location.');
-        } else {
-          navigation.navigate('SearchPage', { destination, travelMode });
-        }
-      } else {
-        Alert.alert('Travel Mode', 'This location may be better reached by air.');
-      }
-    } catch (err) {
-      console.error("❌ handleSearch outer error:", err);
-      Alert.alert('Error', err.message || 'Unknown error');
+  const handleNavigate = () => {
+    if (!destination.trim()) {
+      Alert.alert('Error', 'Please enter a destination.');
+      return;
     }
-  }
+
+    const city = locationName.city;
+    const countryName = locationName.country;
+
+    if (travelMode === 'driving') {
+      navigation.navigate('SearchByCarRoutes', {city, countryName, destination});
+    } else {
+      navigation.navigate('SearchByAir', {city, countryName, destination});
+    }
+  };
+  
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -161,7 +82,6 @@ export default function HomePage({ navigation }) {
           >
             <View style={styles.overlay} />
 
-            {/* Top row: sign-in icon + travel-mode dropdown */}
             <View style={styles.topRow}>
               <TouchableOpacity style={styles.iconButton}>
                 <Image
@@ -211,7 +131,6 @@ export default function HomePage({ navigation }) {
               </View>
             </View>
 
-            {/* Weather and location info */}
             <View style={styles.weatherInfo}>
               <Text style={styles.cityText}>
                 {locationName.city}, {locationName.country}
@@ -229,7 +148,6 @@ export default function HomePage({ navigation }) {
               </View>
             </View>
 
-            {/* Search bar */}
             <View style={styles.searchBar}>
               <Ionicons name="location-outline" size={18} color="#444" />
               <TextInput
@@ -238,12 +156,12 @@ export default function HomePage({ navigation }) {
                 placeholderTextColor="#444"
                 value={destination}
                 onChangeText={setDestination}
-                onSubmitEditing={handleSearch}
+                onSubmitEditing={handleNavigate}
                 returnKeyType="search"
                 blurOnSubmit
               />
               <TouchableOpacity
-                onPress={handleSearch}
+                onPress={handleNavigate}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <Ionicons name="search" size={18} color="#444" />
@@ -254,7 +172,6 @@ export default function HomePage({ navigation }) {
           <Text>Loading...</Text>
         )}
 
-        {/* The rest of your containers */}
         <View style={styles.stackContainer}>
           {locationName?.city && coords.latitude && (
             <CurrentLocationContainers
