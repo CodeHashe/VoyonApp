@@ -42,6 +42,7 @@ import PopularCountriesPlaces from './HomePage/PopularCountriesPlaces';
 import SearchByAir from './SearchPage/SearchByAir';
 import SearchByCar from './SearchPage/SearchByCar';
 import SearchByCarRoutes from './SearchPage/SearchByCarRoutes';
+import SearchByAirFlights from './SearchPage/SearchByAirFlights';
 
 
 
@@ -154,6 +155,7 @@ export default function App() {
         <Stack.Screen name="SearchByAir" component={SearchByAir}/>
         <Stack.Screen name="SearchByCar" component={SearchByCar}/>
         <Stack.Screen name ="SearchByCarRoutes" component={SearchByCarRoutes}/>
+        <Stack.Screen name = "SearchByAirFlights" component={SearchByAirFlights}/>
         
 
       </Stack.Navigator>
