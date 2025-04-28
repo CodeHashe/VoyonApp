@@ -26,6 +26,7 @@ import SignInScreen from "./SignInPage/SignInPage";
 import SignUpScreen from "./SignUpPage/SignUpPage";
 import VerificationPage from './SignUpPage/VerificationPage';
 import ResetPasswordPage from './ResetPasswordPage/ResetPassword';
+import RoutesByAirPage from './RoutesByAirPage/RoutesAir';
 
 
 
@@ -129,11 +130,13 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          
-          <Stack.Screen name="AppTabs" component={AppTabs} />
-        ) : (
+     <Stack.Navigator screenOptions={{ headerShown: false }}>
+  {user ? (
+    <>
+      <Stack.Screen name="AppTabs" component={AppTabs} />
+      <Stack.Screen name="RoutesByAirPage" component={RoutesByAirPage} />
+    </>
+  ) : (
           
           <>
             <Stack.Screen name="Launch" component={LaunchPage} />

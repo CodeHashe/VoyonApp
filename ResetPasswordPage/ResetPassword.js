@@ -5,9 +5,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   Dimensions,
   Platform,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -30,7 +30,6 @@ export default function ResetPasswordScreen({ navigation }) {
       Alert.alert("Error", "Please enter your email.");
       return;
     }
-
     try {
       await sendPasswordResetEmail(auth, email);
       Alert.alert("Reset Link Sent", "Check your email for the reset link.");
