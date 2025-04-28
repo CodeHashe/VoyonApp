@@ -6,7 +6,7 @@ import app from '../Firebase/firebaseConfig';
 import fetchAirlineImage from '../fetchData/fetchAirlineImage';
 
 const db = getFirestore(app);
-const GOOGLE_API_KEY = "AIzaSyDfnOoS_Dk6JuEK7KeoqpKg-2XSudJ0mZo";
+const GOOGLE_API_KEY = "AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w";
 
 export default function RouteInformation({ navigation, route }) {
   const { routeId } = route.params;

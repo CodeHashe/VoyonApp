@@ -20,7 +20,7 @@ import CurrentLocationContainers from './CurrentLocationContainers';
 import CountryContainers from './CountryContainers';
 import PopularCountriesContainers from './PopularCountriesContainers';
 
-const apiKey = "AIzaSyDfnOoS_Dk6JuEK7KeoqpKg-2XSudJ0mZo";
+const apiKey = "AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w";
 
 export default function HomePage({ navigation }) {
   const [locationName, setLocationName] = useState(null);

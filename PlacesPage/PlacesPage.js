@@ -10,7 +10,7 @@ import { AntDesign } from "@expo/vector-icons";
 
 const auth = getAuth(app);
 const db = getFirestore(app);
-const apiKey = "AIzaSyDfnOoS_Dk6JuEK7KeoqpKg-2XSudJ0mZo";
+const apiKey = "AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w";
 
 
 const fetchPlaceID = async (placeName) => {

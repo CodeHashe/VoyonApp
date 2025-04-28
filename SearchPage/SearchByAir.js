@@ -5,7 +5,7 @@ import React, { useState, useRef } from 'react';
 
 const apiKey = "lfTJq6SXlQcxxoKq5EOzelOKwYpinL1b";
 const clientSecret = "EuAkeGU86wNLsVeR";
-const googleApiKey = "AIzaSyDfnOoS_Dk6JuEK7KeoqpKg-2XSudJ0mZo";
+const googleApiKey = "AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w";
 
 export default function SearchByAir({ navigation, route }) {
     const { city, countryName, destination } = route.params;
