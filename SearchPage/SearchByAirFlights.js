@@ -4,10 +4,10 @@ import * as Location from 'expo-location';
 
 export default function SearchByAirFlights({ navigation, route }) {
     const {
-        apiKey,         // Amadeus API key
-        clientSecret,   // Amadeus secret
-        googleApiKey,   // Google Places API key
-        destination, // Destination city (like "New York")
+        apiKey,          // Amadeus API key
+        clientSecret,    // Amadeus secret
+        googleApiKey,    // Google Places API key
+        destination,     // Destination city (e.g., "New York")
         startDate,
         endDate,
         adults,
@@ -41,9 +41,23 @@ export default function SearchByAirFlights({ navigation, route }) {
         console.log("Nearby airports:", data);
 
         if (data.results && data.results.length > 0) {
-            return data.results[0].name;
+            return data.results[0].place_id;
         } else {
             throw new Error('No nearby airport found.');
+        }
+    }
+
+    async function getAirportDetails(placeId, googleApiKey) {
+        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,geometry,address_components&key=${googleApiKey}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Airport details:", data);
+
+        if (data.result) {
+            return data.result;
+        } else {
+            throw new Error('No details found for airport.');
         }
     }
 
@@ -106,7 +120,7 @@ export default function SearchByAirFlights({ navigation, route }) {
     useEffect(() => {
         async function getFlights() {
             try {
-                // Step 1: Request location permissions
+                // Request location permissions
                 let { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
                     Alert.alert('Permission denied', 'Location permission is required to fetch nearest airport.');
@@ -114,24 +128,37 @@ export default function SearchByAirFlights({ navigation, route }) {
                     return;
                 }
 
-                // Step 2: Get user's location
+                // Get user's location
                 let location = await Location.getCurrentPositionAsync({});
                 const { latitude, longitude } = location.coords;
                 console.log("User Location:", latitude, longitude);
 
-                // Step 3: Get Amadeus Access Token
+                // Get Amadeus Access Token
                 const token = await authorizeAmadeus(apiKey, clientSecret);
 
-                // Step 4: Find Nearest Airport Name (Google Places API)
-                const nearestAirportName = await findNearestAirport(googleApiKey, latitude, longitude);
+                // Find nearest airport's Place ID
+                const nearestAirportPlaceId = await findNearestAirport(googleApiKey, latitude, longitude);
 
-                // Step 5: Find Origin IATA from Airport Name
-                const originIATA = await getAirportIATAFromName(nearestAirportName, token);
+                // Get detailed airport info
+                const airportDetails = await getAirportDetails(nearestAirportPlaceId, googleApiKey);
 
-                // Step 6: Find Destination City IATA
+                // Try extracting IATA from address_components (if available)
+                let originIATA = null;
+
+                const iataComponent = airportDetails.address_components?.find(comp => comp.types.includes("airport"));
+                if (iataComponent && iataComponent.short_name.length === 3) {
+                    originIATA = iataComponent.short_name;
+                }
+
+                // Fallback: Use Amadeus lookup if IATA not directly found
+                if (!originIATA) {
+                    originIATA = await getAirportIATAFromName(airportDetails.name, token);
+                }
+
+                // Destination airport IATA
                 const destinationIATA = await getCityAirportIATA(destination, token);
 
-                // Step 7: Fetch Flight Offers
+                // Fetch flights
                 const flightData = await fetchFlights(token, originIATA, destinationIATA);
                 setFlights(flightData);
 

@@ -19,7 +19,7 @@ export default function SearchByAir({ navigation, route }) {
     const [children, setChildren] = useState('');
     const [infants, setInfants] = useState('');
 
-    const [step, setStep] = useState(0); // 0=departure date, 1=return date, 2=adults, 3=children, 4=infants
+    const [step, setStep] = useState(0); 
 
     const adultsRef = useRef(null);
     const childrenRef = useRef(null);

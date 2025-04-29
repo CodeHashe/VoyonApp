@@ -1,10 +1,121 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MapView from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
+import fetchPlaceID from "../fetchData/fetchPlaceID";
+import fetchWeatherForCurrentLocation from "../fetchData/fetchWeatherForCurrentLocation";
+import getCoordinatesFromPlaceId from "../fetchData/getCoordinatesFromPlaceId";
 
 export default function SearchByCarRoutes({ navigation, route }) {
-  const { city, countryName, destination, apiKey } = route.params;
+  const { city, destination, apiKey } = route.params;
+
+  const mapRef = useRef(null);
+  const [destWeatherData, setDestWeatherData] = useState(null);
+  const [originWeatherData, setOriginWeatherData] = useState(null);
+  const [originData, setOriginData] = useState(null);
+  const [destData, setDestData] = useState(null);
+  const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [travelTime, setTravelTime] = useState('');
+
+  useEffect(() => {
+    async function fetchOriginWeatherData() {
+      try {
+        const placeID = await fetchPlaceID(city, apiKey);
+        const { latitude, longitude } = await getCoordinatesFromPlaceId(placeID, apiKey);
+
+        const weatherData = await fetchWeatherForCurrentLocation(latitude, longitude);
+        setOriginWeatherData(weatherData);
+        setOriginData({ latitude, longitude });
+      } catch (err) {
+        console.error("Origin weather fetch error:", err);
+      }
+    }
+    fetchOriginWeatherData();
+  }, [city, apiKey]);
+
+  useEffect(() => {
+    async function fetchDestWeatherData() {
+      try {
+        const placeID = await fetchPlaceID(destination, apiKey);
+        const { latitude, longitude } = await getCoordinatesFromPlaceId(placeID, apiKey);
+
+        const weatherData = await fetchWeatherForCurrentLocation(latitude, longitude);
+        setDestWeatherData(weatherData);
+        setDestData({ latitude, longitude });
+      } catch (err) {
+        console.error("Destination weather fetch error:", err);
+      }
+    }
+    fetchDestWeatherData();
+  }, [destination, apiKey]);
+
+  useEffect(() => {
+    async function fetchRoutePolyline() {
+      if (!originData || !destData) return;
+
+      try {
+        const originStr = `${originData.latitude},${originData.longitude}`;
+        const destStr = `${destData.latitude},${destData.longitude}`;
+        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originStr}&destination=${destStr}&key=${apiKey}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.routes.length) {
+          const points = decodePolyline(data.routes[0].overview_polyline.points);
+          setRouteCoordinates(points);
+
+          // Set dynamic travel time
+          const durationText = data.routes[0].legs[0].duration.text;
+          setTravelTime(durationText);
+        } else {
+          Alert.alert("No route found.");
+        }
+      } catch (err) {
+        console.error("Route polyline error:", err);
+      }
+    }
+    fetchRoutePolyline();
+  }, [originData, destData, apiKey]);
+
+  // Fit map to route when coordinates update
+  useEffect(() => {
+    if (routeCoordinates.length && mapRef.current) {
+      mapRef.current.fitToCoordinates(routeCoordinates, {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      });
+    }
+  }, [routeCoordinates]);
+
+  function decodePolyline(encoded) {
+    let points = [];
+    let index = 0, lat = 0, lng = 0;
+
+    while (index < encoded.length) {
+      let b, shift = 0, result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
+      lng += dlng;
+
+      points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
+    }
+    return points;
+  }
 
   return (
     <View style={styles.container}>
@@ -15,72 +126,79 @@ export default function SearchByCarRoutes({ navigation, route }) {
         <Text style={styles.headerTitle}>Route Info from {city} to {destination}</Text>
       </View>
 
-      
-      <TouchableOpacity style={styles.headerButton}>
+      <Text style={styles.headerButton}>
         <Text style={styles.headerButtonText}>
           Have a look at the route you can take to get there!
         </Text>
-      </TouchableOpacity>
+      </Text>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
-        
         <MapView
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
-            latitude: 33.6844,
-            longitude: 73.0479,
-            latitudeDelta: 2,
-            longitudeDelta: 2,
+            latitude: originData?.latitude || 33.6844,
+            longitude: originData?.longitude || 73.0479,
+            latitudeDelta: 3,
+            longitudeDelta: 3,
           }}
-        />
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Voyan Time to Destination</Text>
-        </TouchableOpacity>
-        <Text style={styles.infoText}>4 hrs 36 mins</Text>
+        >
+          {originData && <Marker coordinate={originData} title="Origin" />}
+          {destData && <Marker coordinate={destData} title="Destination" />}
+          {routeCoordinates.length > 0 && (
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeColor="#1E90FF"
+              strokeWidth={4}
+            />
+          )}
+        </MapView>
 
-         
-         <TouchableOpacity style={styles.button}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Voyon Time to Destination</Text>
+        </View>
+        <Text style={styles.infoText}>{travelTime || 'Calculating...'}</Text>
+
+        <View style={styles.button}>
           <Text style={styles.buttonText}>Voyon Weather Report</Text>
-        </TouchableOpacity>
+        </View>
 
-        
-        <WeatherCard />
-        <WeatherCard1 />
+        <WeatherCard cityName={city} weatherData={originWeatherData} />
+        <WeatherCard cityName={destination} weatherData={destWeatherData} />
 
-        
-        <TouchableOpacity style={styles.button}>
+        <View style={styles.button}>
           <Text style={styles.buttonText}>Voyon Weather Alert</Text>
-        </TouchableOpacity>
+        </View>
 
-        
-        <WeatherStatusCard onPress={() => { }} />
-
+        <WeatherStatusCard onPress={() => {}} />
       </ScrollView>
     </View>
   );
 }
 
-function WeatherCard() {
-  return (
-    <View style={styles.card}>
-      <Text style={styles.cityName}>Islamabad</Text>
-      <View style={styles.weatherRow}>
-        <Ionicons name="cloud-outline" size={32} color="#091A41" />
-        <Text style={styles.temperature}>18°C</Text>
+function WeatherCard({ cityName, weatherData }) {
+  if (!weatherData) {
+    return (
+      <View style={styles.card}>
+        <Text style={styles.cityName}>{cityName}</Text>
+        <Text style={styles.temperature}>Loading...</Text>
       </View>
-    </View>
-  );
-}
+    );
+  }
 
-function WeatherCard1() {
+  const iconCode = weatherData.weather[0].icon;
+  const iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+  const temperature = Math.round(weatherData.main.temp);
+  const description = weatherData.weather[0].description;
+
   return (
     <View style={styles.card}>
-      <Text style={styles.cityName}>Lahore</Text>
+      <Text style={styles.cityName}>{cityName}</Text>
       <View style={styles.weatherRow}>
-        <Ionicons name="cloud-outline" size={32} color="#091A41" />
-        <Text style={styles.temperature}>20°C</Text>
+        <Image source={{ uri: iconUrl }} style={{ width: 50, height: 50 }} />
+        <Text style={styles.temperature}>{temperature}°C</Text>
       </View>
+      <Text style={styles.weatherDescription}>{description}</Text>
     </View>
   );
 }
@@ -88,9 +206,7 @@ function WeatherCard1() {
 function WeatherStatusCard({ onPress }) {
   return (
     <View style={styles.statusCard}>
-      <Text style={styles.statusText}>
-        No Warnings, Weather is Clear between locations
-      </Text>
+      <Text style={styles.statusText}>No Warnings, Weather is Clear between locations</Text>
       <TouchableOpacity style={styles.statusButton} onPress={onPress}>
         <Ionicons name="arrow-forward" size={24} color="white" />
       </TouchableOpacity>
@@ -100,7 +216,6 @@ function WeatherStatusCard({ onPress }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -195,6 +310,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Vilonti-Bold',
     color: '#091A41',
     marginLeft: 10,
+  },
+  weatherDescription: {
+    fontSize: 16,
+    fontFamily: 'Vilonti-Bold',
+    color: '#091A41',
+    marginTop: 10,
   },
   statusCard: {
     flexDirection: 'row',
