@@ -43,6 +43,7 @@ import SearchByAir from './SearchPage/SearchByAir';
 import SearchByCar from './SearchPage/SearchByCar';
 import SearchByCarRoutes from './SearchPage/SearchByCarRoutes';
 import SearchByAirFlights from './SearchPage/SearchByAirFlights';
+import PlacesSubPage from './PlacesPage/PlacesSubPage';
 
 
 
@@ -156,6 +157,7 @@ export default function App() {
         <Stack.Screen name="SearchByCar" component={SearchByCar}/>
         <Stack.Screen name ="SearchByCarRoutes" component={SearchByCarRoutes}/>
         <Stack.Screen name = "SearchByAirFlights" component={SearchByAirFlights}/>
+        <Stack.Screen name ="PlacesSubPage" component={PlacesSubPage}/>
         
 
       </Stack.Navigator>
