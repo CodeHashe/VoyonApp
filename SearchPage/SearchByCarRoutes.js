@@ -1,58 +1,65 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker, Polyline } from 'react-native-maps';
-import fetchPlaceID from "../fetchData/fetchPlaceID";
-import fetchWeatherForCurrentLocation from "../fetchData/fetchWeatherForCurrentLocation";
-import getCoordinatesFromPlaceId from "../fetchData/getCoordinatesFromPlaceId";
+import polyline from '@mapbox/polyline';
+
+import fetchPlaceID from '../fetchData/fetchPlaceID';
+import getCoordinatesFromPlaceId from '../fetchData/getCoordinatesFromPlaceId';
+import fetchWeatherForCurrentLocation from '../fetchData/fetchWeatherForCurrentLocation';
+import fetchWeatherAlerts from '../fetchData/fetchWeatherAlerts';
 
 export default function SearchByCarRoutes({ navigation, route }) {
-  const { city, destination, apiKey } = route.params;
-
+  const { apiKey,
+    city,
+    destination,
+    startDate,  
+    endDate} = route.params;
   const mapRef = useRef(null);
-  const [destWeatherData, setDestWeatherData] = useState(null);
-  const [originWeatherData, setOriginWeatherData] = useState(null);
+
   const [originData, setOriginData] = useState(null);
   const [destData, setDestData] = useState(null);
+  const [originWeatherData, setOriginWeatherData] = useState(null);
+  const [destWeatherData, setDestWeatherData] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [travelTime, setTravelTime] = useState('');
+  const [weatherAlerts, setWeatherAlerts] = useState([]);
 
   useEffect(() => {
-    async function fetchOriginWeatherData() {
+    async function loadOrigin() {
       try {
         const placeID = await fetchPlaceID(city, apiKey);
         const { latitude, longitude } = await getCoordinatesFromPlaceId(placeID, apiKey);
-
-        const weatherData = await fetchWeatherForCurrentLocation(latitude, longitude);
-        setOriginWeatherData(weatherData);
         setOriginData({ latitude, longitude });
+        const weather = await fetchWeatherForCurrentLocation(latitude, longitude);
+        setOriginWeatherData(weather);
       } catch (err) {
-        console.error("Origin weather fetch error:", err);
+        console.error(err);
+        Alert.alert('Error', `Could not load data for ${city}`);
       }
     }
-    fetchOriginWeatherData();
+    loadOrigin();
   }, [city, apiKey]);
 
   useEffect(() => {
-    async function fetchDestWeatherData() {
+    async function loadDest() {
       try {
         const placeID = await fetchPlaceID(destination, apiKey);
         const { latitude, longitude } = await getCoordinatesFromPlaceId(placeID, apiKey);
-
-        const weatherData = await fetchWeatherForCurrentLocation(latitude, longitude);
-        setDestWeatherData(weatherData);
         setDestData({ latitude, longitude });
+        const weather = await fetchWeatherForCurrentLocation(latitude, longitude);
+        setDestWeatherData(weather);
       } catch (err) {
-        console.error("Destination weather fetch error:", err);
+        console.error(err);
+        Alert.alert('Error', `Could not load data for ${destination}`);
       }
     }
-    fetchDestWeatherData();
+    loadDest();
   }, [destination, apiKey]);
 
   useEffect(() => {
-    async function fetchRoutePolyline() {
+    async function loadRoute() {
       if (!originData || !destData) return;
-
       try {
         const originStr = `${originData.latitude},${originData.longitude}`;
         const destStr = `${destData.latitude},${destData.longitude}`;
@@ -61,24 +68,37 @@ export default function SearchByCarRoutes({ navigation, route }) {
         const response = await fetch(url);
         const data = await response.json();
 
-        if (data.routes.length) {
-          const points = decodePolyline(data.routes[0].overview_polyline.points);
-          setRouteCoordinates(points);
-
-          // Set dynamic travel time
-          const durationText = data.routes[0].legs[0].duration.text;
-          setTravelTime(durationText);
+        if (data.routes.length > 0) {
+          const decoded = polyline.decode(data.routes[0].overview_polyline.points);
+          setRouteCoordinates(decoded.map(([lat, lng]) => ({ latitude: lat, longitude: lng })));
+          setTravelTime(data.routes[0].legs[0].duration.text);
         } else {
-          Alert.alert("No route found.");
+          Alert.alert('No Route', 'Could not find a route between these locations.');
         }
       } catch (err) {
-        console.error("Route polyline error:", err);
+        console.error(err);
+        Alert.alert('Error', 'Failed to load route information.');
       }
     }
-    fetchRoutePolyline();
+    loadRoute();
   }, [originData, destData, apiKey]);
 
-  // Fit map to route when coordinates update
+  
+  useEffect(() => {
+    async function loadAlerts() {
+      if (!originData) return;
+      try {
+        const alerts = await fetchWeatherAlerts(destData.latitude, destData.longitude);
+        console.log(alerts);
+        setWeatherAlerts(alerts || []);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    loadAlerts();
+  }, [originData]);
+
+  
   useEffect(() => {
     if (routeCoordinates.length && mapRef.current) {
       mapRef.current.fitToCoordinates(routeCoordinates, {
@@ -88,34 +108,21 @@ export default function SearchByCarRoutes({ navigation, route }) {
     }
   }, [routeCoordinates]);
 
-  function decodePolyline(encoded) {
-    let points = [];
-    let index = 0, lat = 0, lng = 0;
+   const handleNext = () => {
+                  navigation.navigate('ActivitiesPage', {
+                      apiKey,
+                      city,
+                      destination,
+                      startDate,  
+                      endDate,
+                      srcLat: originData.latitude,
+                      srcLong: originData.longitude,
+                      destLat: destData.latitude,
+                      destLong: destData.longitude
+                  });
 
-    while (index < encoded.length) {
-      let b, shift = 0, result = 0;
-      do {
-        b = encoded.charCodeAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
-      lat += dlat;
-
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.charCodeAt(index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
-      lng += dlng;
-
-      points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
-    }
-    return points;
-  }
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -123,22 +130,16 @@ export default function SearchByCarRoutes({ navigation, route }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Route Info from {city} to {destination}</Text>
+        <Text style={styles.headerTitle}>Route from {city} to {destination}</Text>
       </View>
-
-      <Text style={styles.headerButton}>
-        <Text style={styles.headerButtonText}>
-          Have a look at the route you can take to get there!
-        </Text>
-      </Text>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <MapView
           ref={mapRef}
           style={styles.map}
           initialRegion={{
-            latitude: originData?.latitude || 33.6844,
-            longitude: originData?.longitude || 73.0479,
+            latitude: originData?.latitude ?? 33.6844,
+            longitude: originData?.longitude ?? 73.0479,
             latitudeDelta: 3,
             longitudeDelta: 3,
           }}
@@ -154,24 +155,27 @@ export default function SearchByCarRoutes({ navigation, route }) {
           )}
         </MapView>
 
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>Voyon Time to Destination</Text>
-        </View>
-        <Text style={styles.infoText}>{travelTime || 'Calculating...'}</Text>
-
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>Voyon Weather Report</Text>
+        <View style={styles.infoSection}>
+          <Text style={styles.infoLabel}>Travel Time</Text>
+          <Text style={styles.infoText}>{travelTime || 'Calculating...'}</Text>
         </View>
 
-        <WeatherCard cityName={city} weatherData={originWeatherData} />
-        <WeatherCard cityName={destination} weatherData={destWeatherData} />
-
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>Voyon Weather Alert</Text>
+        <View style={styles.infoSection}>
+          <Text style={styles.infoLabel}>Weather Report</Text>
+          <WeatherCard cityName={city} weatherData={originWeatherData} />
+          <WeatherCard cityName={destination} weatherData={destWeatherData} />
         </View>
 
-        <WeatherStatusCard onPress={() => {}} />
+        <View style={styles.infoSection}>
+          <Text style={styles.infoLabel}>Weather Alerts</Text>
+          <WeatherStatusCard alerts={weatherAlerts} />
+        </View>
       </ScrollView>
+
+           <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+                <Ionicons name="arrow-forward" size={30} color="#FFFFFF" />
+            </TouchableOpacity>
+
     </View>
   );
 }
@@ -195,7 +199,7 @@ function WeatherCard({ cityName, weatherData }) {
     <View style={styles.card}>
       <Text style={styles.cityName}>{cityName}</Text>
       <View style={styles.weatherRow}>
-        <Image source={{ uri: iconUrl }} style={{ width: 50, height: 50 }} />
+        <Image source={{ uri: iconUrl }} style={styles.weatherIcon} />
         <Text style={styles.temperature}>{temperature}°C</Text>
       </View>
       <Text style={styles.weatherDescription}>{description}</Text>
@@ -203,129 +207,66 @@ function WeatherCard({ cityName, weatherData }) {
   );
 }
 
-function WeatherStatusCard({ onPress }) {
+function WeatherStatusCard({ alerts }) {
+  const hasAlerts = Array.isArray(alerts) && alerts.length > 0;
+  const message = hasAlerts
+    ? alerts.map(a => a.title).join('\n\n')
+    : 'No Warnings — weather is clear between locations';
+
   return (
     <View style={styles.statusCard}>
-      <Text style={styles.statusText}>No Warnings, Weather is Clear between locations</Text>
-      <TouchableOpacity style={styles.statusButton} onPress={onPress}>
-        <Ionicons name="arrow-forward" size={24} color="white" />
-      </TouchableOpacity>
+      <Text style={styles.statusText}>{message}</Text>
+      {hasAlerts && (
+        <TouchableOpacity style={styles.statusButton} onPress={() => Alert.alert('Alert Details', alerts[0].description)}>
+          <Ionicons name="arrow-forward" size={24} color="white" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
 
+
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 8,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: "Vilonti-Bold",
-    color: '#091A41',
-    flexShrink: 1,
-  },
-  headerButton: {
-    marginTop: 10,
-    marginHorizontal: 16,
-    width: '90%',
-    backgroundColor: '#091A41',
-    borderRadius: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  headerButtonText: {
-    color: 'white',
-    fontSize: 15,
-    fontFamily: "Vilonti-Bold",
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#fff'},
+  header: { flexDirection: 'row', alignItems: 'center', padding: 16 },
+  backButton: { padding: 8, marginRight: 8 },
+  headerTitle: { fontSize: 20, fontFamily: 'Vilonti-Bold', color: '#091A41', flexShrink: 1 },
+  scrollContent: { paddingBottom: 20, alignItems: 'center' },
   map: {
-    width: '150%',
+    width: width - 32,
     height: 200,
     borderRadius: 16,
     marginBottom: 16,
   },
-  button: {
-    width: 220,
-    height: 60,
-    marginTop: 20,
-    backgroundColor: '#091A41',
-    borderRadius: 37,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 15,
-    fontFamily: "Vilonti-Bold",
-  },
-  infoText: {
-    textAlign: 'center',
-    fontFamily: "Vilonti-Bold",
-    fontSize: 24,
-    color: '#004080',
-    marginVertical: 10,
-  },
+  infoSection: { width: '90%', marginVertical: 10, alignItems: 'center' },
+  infoLabel: { fontSize: 18, fontFamily: 'Vilonti-Bold', color: '#091A41', marginBottom: 8 },
+  infoText: { fontSize: 24, fontFamily: 'Vilonti-Bold', color: '#004080' },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
     borderRadius: 30,
-    paddingVertical: 20,
-    paddingHorizontal: 30,
+    padding: 20,
     alignItems: 'center',
-    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 5,
-    width: 280,
-    height: 150,
-    alignSelf: 'center',
-    marginVertical: 20,
+    width: '100%',
+    marginBottom: 16,
   },
-  cityName: {
-    fontSize: 24,
-    fontFamily: 'Vilonti-Bold',
-    color: '#000000',
-    marginBottom: 15,
-  },
-  weatherRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  temperature: {
-    fontSize: 24,
-    fontFamily: 'Vilonti-Bold',
-    color: '#091A41',
-    marginLeft: 10,
-  },
-  weatherDescription: {
-    fontSize: 16,
-    fontFamily: 'Vilonti-Bold',
-    color: '#091A41',
-    marginTop: 10,
-  },
+  cityName: { fontSize: 24, fontFamily: 'Vilonti-Bold', color: '#000' },
+  weatherRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
+  weatherIcon: { width: 50, height: 50 },
+  temperature: { fontSize: 24, fontFamily: 'Vilonti-Bold', marginLeft: 10, color: '#091A41' },
+  weatherDescription: { fontSize: 16, fontFamily: 'Vilonti-Bold', color: '#091A41', marginTop: 8 },
   statusCard: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 15,
-    marginTop: 20,
-    marginHorizontal: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -333,12 +274,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     width: '100%',
   },
-  statusText: {
-    flex: 1,
-    fontSize: 16,
-    fontFamily: 'Vilonti-Bold',
-    color: '#091A41',
-  },
+  statusText: { flex: 1, fontSize: 16, fontFamily: 'Vilonti-Bold', color: '#091A41' },
   statusButton: {
     backgroundColor: '#091A41',
     borderRadius: 30,
@@ -348,4 +284,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 10,
   },
+  nextButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#010F29',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+},
 });
