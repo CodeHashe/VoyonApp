@@ -109,7 +109,7 @@ export default function SearchByCarRoutes({ navigation, route }) {
   }, [routeCoordinates]);
 
    const handleNext = () => {
-                  navigation.navigate('ActivitiesPage', {
+                  navigation.navigate('ActivitiesPlanningPage', {
                       apiKey,
                       city,
                       destination,

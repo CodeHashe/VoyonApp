@@ -1,8 +1,4 @@
-export default function ActivitiesPage({navigation}){
-
-
-
-
+export default function ActivitiesPage(){
 
 
     

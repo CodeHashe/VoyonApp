@@ -33,9 +33,9 @@ import RoutesByAirPage from './RoutesByAirPage/RoutesAir';
 
 import HomeScreen from "./HomePage/HomePage";
 import RoutesScreen from "./RoutesPage/RoutesPage";
-import ActivitiesScreen from "./ActivitiesPage/ActivitiesPage";
 import PlacesPage from "./PlacesPage/PlacesPage";
 import AccountsPage from './AccountsPage/AccountsPage';
+import ActivitiesPage from './ActivitiesPage/ActivitiesPage';
 import PlaceDetails from './HomePage/PlacesDetails';
 import CountryContainers from './HomePage/CountryContainers';
 import PopularCountriesPlaces from './HomePage/PopularCountriesPlaces';
@@ -44,6 +44,8 @@ import SearchByCar from './SearchPage/SearchByCar';
 import SearchByCarRoutes from './SearchPage/SearchByCarRoutes';
 import SearchByAirFlights from './SearchPage/SearchByAirFlights';
 import PlacesSubPage from './PlacesPage/PlacesSubPage';
+import ActivitiesPlanningPage from './ActivitiesSubPages/ActivitiesPlanningPage';
+import ActivitiesQueue from './ActivitiesSubPages/ActivitiesQueue';
 
 
 
@@ -93,7 +95,7 @@ function AppTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Routes" component={RoutesScreen} />
-      <Tab.Screen name="Activities" component={ActivitiesScreen} />
+      <Tab.Screen name="Activities" component={ActivitiesPage} />
       <Tab.Screen name="Places" component={PlacesPage} />
       <Tab.Screen name="Account" component={AccountsPage} />
     </Tab.Navigator>
@@ -137,6 +139,7 @@ export default function App() {
     <>
       <Stack.Screen name="AppTabs" component={AppTabs} />
       <Stack.Screen name="RoutesByAirPage" component={RoutesByAirPage} />
+      
     </>
   ) : (
           
@@ -151,6 +154,8 @@ export default function App() {
           </>
         )}
         <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
+        <Stack.Screen name ="ActivitiesPlanningPage" component={ActivitiesPlanningPage}/>
+        <Stack.Screen name ="ActivitiesQueue" component={ActivitiesQueue}/>
         <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
         <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
         <Stack.Screen name="SearchByAir" component={SearchByAir}/>
