@@ -39,11 +39,12 @@ export default function ActivitiesQueue({ navigation,route }) {
 
   return (
     <View style={{ flex: 1, marginTop: 40, paddingHorizontal: 10 }}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.heading}>Your Activities Queue</Text>
-
+      <View style={styles.header}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Ionicons name="arrow-back" size={24} color="#000" />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Your Activities Queue</Text>
+            </View>
       <View style={styles.bubble}>
         <Text style={styles.bubbleText}>Have a look at your queue!</Text>
       </View>
@@ -66,11 +67,16 @@ export default function ActivitiesQueue({ navigation,route }) {
 }
 
 const styles = StyleSheet.create({
-  heading: {
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  headerTitle: {
+    marginLeft: 10,
     fontSize: 20,
-    fontFamily: 'Vilonti-Bold',
-    marginVertical: 10,
-    color: '#010F29'
+    fontFamily: "Vilonti-Bold",
+    color: "#010F29",
   },
   bubble: {
     width: '90%',

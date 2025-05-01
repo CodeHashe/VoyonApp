@@ -46,6 +46,7 @@ import SearchByAirFlights from './SearchPage/SearchByAirFlights';
 import PlacesSubPage from './PlacesPage/PlacesSubPage';
 import ActivitiesPlanningPage from './ActivitiesSubPages/ActivitiesPlanningPage';
 import ActivitiesQueue from './ActivitiesSubPages/ActivitiesQueue';
+import ActivitiesPlanner from './ActivitiesSubPages/ActivitiesPlanner';
 
 
 
@@ -156,6 +157,7 @@ export default function App() {
         <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
         <Stack.Screen name ="ActivitiesPlanningPage" component={ActivitiesPlanningPage}/>
         <Stack.Screen name ="ActivitiesQueue" component={ActivitiesQueue}/>
+        <Stack.Screen name ="ActivitiesPlanner" component={ActivitiesPlanner}/>
         <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
         <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
         <Stack.Screen name="SearchByAir" component={SearchByAir}/>
