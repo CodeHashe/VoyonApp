@@ -27,7 +27,7 @@ export default function ActivitiesQueue({ navigation,route }) {
     setActivities(updated);
     
     const storedCount = await AsyncStorage.getItem(`activityCount_${destination}`);
-    const count = Number(storedCount);
+    let count = Number(storedCount);
     console.log(count);
     if(count>0){
       count--;
