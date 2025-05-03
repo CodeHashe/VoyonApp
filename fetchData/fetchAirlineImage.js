@@ -1,6 +1,9 @@
 const ninjaApiKey = "XFzkouJBwGwb6dtoLS2rNw==dtg2dKVq8aL2s2UI";
 
 export default async function fetchAirlineImage(airlineName) {
+
+  console.log("Fetching for airline: ", airlineName);
+
   try {
     const url = "https://api.api-ninjas.com/v1/airlines?name=" + encodeURIComponent(airlineName);
 

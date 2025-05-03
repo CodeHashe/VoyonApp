@@ -1,224 +1,328 @@
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert } from "react-native";
 import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  Alert,
+  TouchableOpacity
+} from 'react-native';
 import * as Location from 'expo-location';
+import { Ionicons } from '@expo/vector-icons';
+import fetchAirlineImage from '../fetchData/fetchAirlineImage';
 
 export default function SearchByAirFlights({ navigation, route }) {
-    const {
-        apiKey,          // Amadeus API key
-        clientSecret,    // Amadeus secret
-        googleApiKey,    // Google Places API key
-        destination,     // Destination city (e.g., "New York")
-        startDate,
-        endDate,
-        adults,
-        children,
-        infants
-    } = route.params;
+  const {
+    apiKey,
+    clientSecret,
+    googleApiKey,
+    city,
+    destination,
+    startDate,
+    endDate,
+    adults,
+    children,
+    infants
+  } = route.params;
 
-    const [flights, setFlights] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [srcCoords, setSrcCoords] = useState({ lat: null, long: null });
+  const [destCoords, setDestCoords] = useState({ lat: null, long: null });
+  const [originIATA, setOriginIATA] = useState('');
+  const [destIATA, setDestIATA] = useState('');
+  const [directFlights, setDirectFlights] = useState([]);
+  const [connectingFlights, setConnectingFlights] = useState([]);
+  const [bestOffers, setBestOffers] = useState([]);
+  const [carriers, setCarriers] = useState({});
+  const [airlineImages, setAirlineImages] = useState({});
+  const [loading, setLoading] = useState(true);
 
-    async function authorizeAmadeus(apiKey, clientSecret) {
-        const body = `grant_type=client_credentials&client_id=${apiKey}&client_secret=${clientSecret}`;
-
-        const response = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body,
-        });
-
-        const data = await response.json();
-        return data.access_token;
-    }
-
-    async function findNearestAirport(googleApiKey, latitude, longitude) {
-        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=50000&type=airport&key=${googleApiKey}`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log("Nearby airports:", data);
-
-        if (data.results && data.results.length > 0) {
-            return data.results[0].place_id;
-        } else {
-            throw new Error('No nearby airport found.');
-        }
-    }
-
-    async function getAirportDetails(placeId, googleApiKey) {
-        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,geometry,address_components&key=${googleApiKey}`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log("Airport details:", data);
-
-        if (data.result) {
-            return data.result;
-        } else {
-            throw new Error('No details found for airport.');
-        }
-    }
-
-    async function getAirportIATAFromName(airportName, accessToken) {
-        const url = `https://test.api.amadeus.com/v1/reference-data/locations?subType=AIRPORT&keyword=${encodeURIComponent(airportName)}`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        const data = await response.json();
-        console.log("IATA from Amadeus:", data);
-
-        if (data.data && data.data.length > 0 && data.data[0].iataCode) {
-            return data.data[0].iataCode;
-        } else {
-            throw new Error('No IATA code found for airport: ' + airportName);
-        }
-    }
-
-    async function getCityAirportIATA(cityName, accessToken) {
-        const url = `https://test.api.amadeus.com/v1/reference-data/locations?subType=AIRPORT&keyword=${encodeURIComponent(cityName)}`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        const data = await response.json();
-        console.log("Destination IATA:", data);
-
-        if (data.data && data.data.length > 0 && data.data[0].iataCode) {
-            return data.data[0].iataCode;
-        } else {
-            throw new Error('Destination IATA code not found for city: ' + cityName);
-        }
-    }
-
-    async function fetchFlights(accessToken, originIATA, destinationIATA) {
-        const url = `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originIATA}&destinationLocationCode=${destinationIATA}&departureDate=${startDate}&adults=${adults}&currencyCode=USD&max=10`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        const data = await response.json();
-        console.log("Flights:", data);
-
-        return data.data;
-    }
-
-    useEffect(() => {
-        async function getFlights() {
-            try {
-                // Request location permissions
-                let { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                    Alert.alert('Permission denied', 'Location permission is required to fetch nearest airport.');
-                    setLoading(false);
-                    return;
-                }
-
-                // Get user's location
-                let location = await Location.getCurrentPositionAsync({});
-                const { latitude, longitude } = location.coords;
-                console.log("User Location:", latitude, longitude);
-
-                // Get Amadeus Access Token
-                const token = await authorizeAmadeus(apiKey, clientSecret);
-
-                // Find nearest airport's Place ID
-                const nearestAirportPlaceId = await findNearestAirport(googleApiKey, latitude, longitude);
-
-                // Get detailed airport info
-                const airportDetails = await getAirportDetails(nearestAirportPlaceId, googleApiKey);
-
-                // Try extracting IATA from address_components (if available)
-                let originIATA = null;
-
-                const iataComponent = airportDetails.address_components?.find(comp => comp.types.includes("airport"));
-                if (iataComponent && iataComponent.short_name.length === 3) {
-                    originIATA = iataComponent.short_name;
-                }
-
-                // Fallback: Use Amadeus lookup if IATA not directly found
-                if (!originIATA) {
-                    originIATA = await getAirportIATAFromName(airportDetails.name, token);
-                }
-
-                // Destination airport IATA
-                const destinationIATA = await getCityAirportIATA(destination, token);
-
-                // Fetch flights
-                const flightData = await fetchFlights(token, originIATA, destinationIATA);
-                setFlights(flightData);
-
-            } catch (error) {
-                console.error("Error fetching flights:", error);
-                Alert.alert('Error', error.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        getFlights();
-    }, []);
-
-    if (loading) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
-
-    return (
-        <View style={styles.container}>
-            <FlatList
-                data={flights}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.flightItem}>
-                        <Text style={styles.text}>Flight Price: {item.price.total} USD</Text>
-                        <Text style={styles.text}>From: {item.itineraries[0].segments[0].departure.iataCode}</Text>
-                        <Text style={styles.text}>To: {item.itineraries[0].segments[0].arrival.iataCode}</Text>
-                        <Text style={styles.text}>Departure: {item.itineraries[0].segments[0].departure.at}</Text>
-                        <Text style={styles.text}>Arrival: {item.itineraries[0].segments[0].arrival.at}</Text>
-                    </View>
-                )}
-            />
-        </View>
+  async function authorizeAmadeus(key, secret) {
+    const body = `grant_type=client_credentials&client_id=${key}&client_secret=${secret}`;
+    const res = await fetch(
+      'https://test.api.amadeus.com/v1/security/oauth2/token',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
+      }
     );
+    return (await res.json()).access_token;
+  }
+
+  async function getNearestAirportIATA(lat, lon, token) {
+    const res = await fetch(
+      `https://test.api.amadeus.com/v1/reference-data/locations/airports?latitude=${lat}&longitude=${lon}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const json = await res.json();
+    return json.data?.[0]?.iataCode;
+  }
+
+  async function getCityCoordinates(name, key) {
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(name)}&key=${key}`
+    );
+    const json = await res.json();
+    if (json.results?.length) return json.results[0].geometry.location;
+    throw new Error(`Could not geocode city: ${name}`);
+  }
+
+  async function fetchFlights(token, origin, dest) {
+    const url =
+      `https://test.api.amadeus.com/v2/shopping/flight-offers` +
+      `?originLocationCode=${origin}` +
+      `&destinationLocationCode=${dest}` +
+      `&departureDate=${startDate}` +
+      `&adults=${adults}` +
+      `&currencyCode=USD&max=20`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    const json = await res.json();
+    return {
+      flights: json.data || [],
+      carriers: json.dictionaries?.carriers || {}
+    };
+  }
+
+  function categorizeFlights(all) {
+    const direct = all.filter(f => f.itineraries.every(i => i.segments.length === 1));
+    const connecting = all.filter(f => f.itineraries.some(i => i.segments.length > 1));
+    const best = all.slice(0, 3);
+    return { direct, connecting, best };
+  }
+
+  async function loadAirlineImages(flights, carriersDict) {
+    if (!flights || !carriersDict) return;
+    const codes = new Set();
+    flights.forEach(f =>
+      f.itineraries.forEach(i =>
+        i.segments.forEach(s => codes.add(s.carrierCode))
+      )
+    );
+    const map = {};
+    await Promise.all(
+      [...codes].map(async code => {
+        const name = carriersDict[code];
+        if (!name) return;
+        const url = await fetchAirlineImage(name);
+        if (url) map[code] = url;
+      })
+    );
+    setAirlineImages(map);
+  }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // 1) Location & origin airport
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission denied', 'Location is required.');
+          navigation.navigate('ActivitiesPlanningPage');
+          return;
+        }
+        const { coords } = await Location.getCurrentPositionAsync();
+        setSrcCoords({ lat: coords.latitude, long: coords.longitude });
+
+        // 2) Auth & IATAs
+        const token = await authorizeAmadeus(apiKey, clientSecret);
+        const origin = await getNearestAirportIATA(coords.latitude, coords.longitude, token);
+        setOriginIATA(origin);
+
+        const { lat, lng } = await getCityCoordinates(destination, googleApiKey);
+        setDestCoords({ lat, long: lng });
+        const dest = await getNearestAirportIATA(lat, lng, token);
+        console.log("Destination: ", dest);
+        setDestIATA(dest);
+
+        // 3) Fetch flights
+        const { flights: allFlights, carriers: carriersDict } = await fetchFlights(token, origin, dest);
+
+        if (allFlights.length === 0) {
+          navigation.replace('ActivitiesPlanningPage', {
+            apiKey: googleApiKey,
+            city,
+            destination,
+            startDate,
+            endDate,
+            srcLat: coords.latitude,
+            srcLong: coords.longitude,
+            destLat: lat,
+            destLong: lng
+          });
+          return;
+        }
+
+        // 4) Categorize + logos
+        const { direct, connecting, best } = categorizeFlights(allFlights);
+        setDirectFlights(direct);
+        setConnectingFlights(connecting);
+        setBestOffers(best);
+        setCarriers(carriersDict);
+        await loadAirlineImages(allFlights, carriersDict);
+      } catch (err) {
+        Alert.alert('Error', err.message, [
+          { text: 'OK', onPress: () => navigation.navigate('ActivitiesPlanningPage') }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const extractCodes = list =>
+    [...new Set(list.flatMap(f => f.itineraries.flatMap(i => i.segments.map(s => s.carrierCode))))];
+
+  const handlePress = (airlineCode, airlineName) => {
+    navigation.navigate('FlightsInfo', {
+      city,
+      destination,
+      amadeusApiKey: apiKey,
+      amadeusClientSecret: clientSecret,
+      airlineName,
+      airlineIATACode: airlineCode,
+      srcIATACode: originIATA,
+      destIATACode: destIATA,
+      startDate,
+      endDate,
+      adults,
+      children,
+      infants
+    });
+  };
+
+  const renderCard = code => (
+    <TouchableOpacity
+      key={code}
+      style={styles.card}
+      onPress={() => handlePress(code, carriers[code])}
+    >
+      {airlineImages[code] && (
+        <Image source={{ uri: airlineImages[code] }} style={styles.cardLogo} />
+      )}
+      <Text style={styles.cardText}>{carriers[code] || code}</Text>
+    </TouchableOpacity>
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#010F29" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.screen, { marginTop: 20 }]}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Flights to {destination}</Text>
+      </View>
+
+      {/* Flights */}
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
+        {['Direct', 'Connecting', 'Best Offers'].map((title, idx) => {
+          const list = idx === 0 ? directFlights : idx === 1 ? connectingFlights : bestOffers;
+          return (
+            <View key={title}>
+              <Text style={styles.sectionTitle}>
+                {title} Flights to {destination}
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {extractCodes(list).map(renderCard)}
+              </ScrollView>
+            </View>
+          );
+        })}
+      </ScrollView>
+
+      {/* Skip Button */}
+      <TouchableOpacity
+        style={styles.skipButton}
+        onPress={() =>
+          navigation.navigate('ActivitiesPlanningPage', {
+            apiKey: googleApiKey,
+            city,
+            destination,
+            startDate,
+            endDate,
+            srcLat: srcCoords.lat,
+            srcLong: srcCoords.long,
+            destLat: destCoords.lat,
+            destLong: destCoords.long
+          })
+        }
+      >
+        <Text style={styles.skipText}>Skip to Activities Planning</Text>
+        <Ionicons name="arrow-forward" size={20} color="#fff" style={{ marginLeft: 8 }} />
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: "#fff",
-    },
-    centered: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    flightItem: {
-        marginBottom: 20,
-        padding: 15,
-        backgroundColor: "#f0f0f0",
-        borderRadius: 10,
-    },
-    text: {
-        fontSize: 16,
-        marginBottom: 5,
-    },
+  screen: { flex: 1, backgroundColor: '#fff' },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16
+  },
+  headerTitle: {
+    marginLeft: 12,
+    fontSize: 18,
+    fontFamily: 'Vilonti-Bold',
+    color: '#333'
+  },
+  container: { paddingHorizontal: 16 },
+  sectionTitle: {
+    fontSize: 16,
+    fontFamily: 'Vilonti-Bold',
+    color: '#010F29',
+    marginTop: 16,
+    marginBottom: 8
+  },
+  card: {
+    width: 100,
+    height: 120,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginRight: 12,
+    alignItems: 'center',
+    paddingTop: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3
+  },
+  cardLogo: { width: 60, height: 30, marginBottom: 8 },
+  cardText: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#010F29',
+    fontFamily: 'Vilonti-Medium'
+  },
+  skipButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    backgroundColor: '#010F29',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderRadius: 30,
+    elevation: 4
+  },
+  skipText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Vilonti-Bold'
+  },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' }
 });

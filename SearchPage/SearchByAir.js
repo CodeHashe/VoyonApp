@@ -59,8 +59,9 @@ export default function SearchByAir({ navigation, route }) {
                     apiKey,
                     clientSecret,
                     googleApiKey,
+                    city,
                     destination,
-                    startDate: startDate.toISOString().split('T')[0],  // "2025-04-28"
+                    startDate: startDate.toISOString().split('T')[0],  
                     endDate: endDate.toISOString().split('T')[0], 
                     adults,
                     children,
