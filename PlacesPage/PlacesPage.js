@@ -3,9 +3,9 @@ import {
   View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Image 
 } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, getDocs, collection } from 'firebase/firestore';
+import { getFirestore, getDocs, collection, query, where, deleteDoc, doc} from 'firebase/firestore';
 import app from '../Firebase/firebaseConfig';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -61,6 +61,7 @@ export default function PlacesPage({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [imageCache, setImageCache] = useState({});
 
+  // Fetch user’s saved places
   useEffect(() => {
     const fetchPlaces = async () => {
       setLoading(true);
@@ -68,12 +69,13 @@ export default function PlacesPage({ navigation }) {
         const user = auth.currentUser;
         if (!user) {
           console.error('No user is logged in.');
+          setLoading(false);
           return;
         }
 
         const snapshot = await getDocs(collection(db, 'places'));
         const list = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
           .filter(place => place.email === user.email);
 
         setPlaces(list);
@@ -86,6 +88,7 @@ export default function PlacesPage({ navigation }) {
     fetchPlaces();
   }, []);
 
+  // Preload images for each place
   useEffect(() => {
     const loadImages = async () => {
       const cache = { ...imageCache };
@@ -103,31 +106,75 @@ export default function PlacesPage({ navigation }) {
     if (places.length) loadImages();
   }, [places]);
 
+  // Deletes all place docs and matching activities by city+email
+  const deletePlaceAndActivities = async (placeLocation, userEmail) => {
+    try {
+      // 1. Delete matching place docs
+      const placesQuery = query(
+        collection(db, 'places'),
+        where('location', '==', placeLocation),
+        where('email', '==', userEmail)
+      );
+      const placesSnap = await getDocs(placesQuery);
+      const placeDeletes = placesSnap.docs.map(d => deleteDoc(doc(db, 'places', d.id)));
+      
+      // 2. Delete matching activities in placesActivities
+      const actQuery = query(
+        collection(db, 'placesActivities'),
+        where('location', '==', placeLocation),
+        where('email', '==', userEmail)
+      );
+      const actSnap = await getDocs(actQuery);
+      const actDeletes = actSnap.docs.map(d => deleteDoc(doc(db, 'placesActivities', d.id)));
+
+      // wait for all deletions
+      await Promise.all([...placeDeletes, ...actDeletes]);
+
+      // 3. Update UI state
+      setPlaces(prev => prev.filter(p => p.location !== placeLocation));
+      console.log(`Deleted all records for ${placeLocation}`);
+    } catch (error) {
+      console.error('Error deleting place or activities:', error);
+      alert('Failed to delete place. Please try again.');
+    }
+  };
+
   const handleCitySelect = (city) => {
-    console.log('Sending city name: ', city);
     const user = auth.currentUser;
-    navigation.navigate('PlacesSubPage', { city, userEmail: user.email, apiKey:apiKey });
+    navigation.navigate('PlacesSubPage', {
+      city,
+      userEmail: user.email,
+      apiKey
+    });
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => handleCitySelect(item.location)}
-    >
-      <Image
-        source={
-          imageCache[item.location]
-            ? { uri: imageCache[item.location] }
-            : require('../assets/Minar-e-Pakistan.png')
-        }
-        style={styles.placeImage}
-      />
-      <View style={styles.textContainer}>
-        <Text style={styles.placeName}>{item.location}</Text>
-        <Text style={styles.visitDate}>Visited On: {item.DateVisited}</Text>
-      </View>
+    <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.cardContent}
+        onPress={() => handleCitySelect(item.location)}
+      >
+        <Image
+          source={
+            imageCache[item.location]
+              ? { uri: imageCache[item.location] }
+              : require('../assets/Minar-e-Pakistan.png')
+          }
+          style={styles.placeImage}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.placeName}>{item.location}</Text>
+          <Text style={styles.visitDate}>Visited On: {item.DateVisited}</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => deletePlaceAndActivities(item.location, auth.currentUser.email)}
+      >
+        <MaterialIcons name="delete" size={24} color="white" />
+      </TouchableOpacity>
       <AntDesign name="arrowright" size={24} color="white" style={styles.arrowIcon} />
-    </TouchableOpacity>
+    </View>
   );
 
   if (loading) {
@@ -140,7 +187,9 @@ export default function PlacesPage({ navigation }) {
         <Image source={require('../assets/SignInLogo.png')} style={styles.appIcon} />
         <Text style={styles.headerText}>Voyon</Text>
       </View>
-      <Text style={[styles.header, { color: '#010F29', textAlign: 'center' }]}>Your Visited Places</Text>
+      <Text style={[styles.header, { color: '#010F29', textAlign: 'center' }]}>
+        Your Visited Places
+      </Text>
       <FlatList
         data={places}
         keyExtractor={item => item.id}
@@ -161,27 +210,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#010F29',
     borderRadius: 37,
     justifyContent: 'center',
-    marginRight: 10,
+    marginBottom: 10,
   },
   appIcon: { width: 32, height: 32, marginBottom: 5 },
   headerText: { fontFamily: 'Vilonti-Bold', fontSize: 23, color: 'white' },
-  header: { fontFamily: 'Vilonti-Black', fontSize: 27, color: '#010F29', textAlign: 'center' },
+  header: { fontFamily: 'Vilonti-Black', fontSize: 27, marginVertical: 10 },
   card: {
-    width: 'auto',
-    height: 100,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#010F29',
     borderRadius: 37,
     marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-  placeImage: { width: 150, height: 100, borderRadius: 37, marginRight: 20 },
+  cardContent: { flexDirection: 'row', flex: 1, alignItems: 'center' },
+  placeImage: { width: 80, height: 80, borderRadius: 37, marginRight: 20 },
   textContainer: { flex: 1 },
-  placeName: { fontSize: 18, fontFamily: 'Vilonti-Black', color: 'white', textAlign: 'center' },
-  visitDate: { fontFamily: 'Vilonti-Medium', fontSize: 16, color: 'white', textAlign: 'center' },
-  arrowIcon: { padding: 10 },
+  placeName: { fontSize: 18, fontFamily: 'Vilonti-Black', color: 'white' },
+  visitDate: { fontFamily: 'Vilonti-Medium', fontSize: 16, color: 'white' },
+  deleteButton: {
+    padding: 8,
+    marginRight: 8,
+    backgroundColor: '#BF2C2C',
+    borderRadius: 20,
+  },
+  arrowIcon: { marginRight: 8 },
 });

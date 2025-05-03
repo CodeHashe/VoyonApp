@@ -12,9 +12,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getAuth } from "firebase/auth";
+import { doc, updateDoc, getFirestore, collection, setDoc, addDoc } from "firebase/firestore";
+import app from "../Firebase/firebaseConfig";
+
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 export default function ActivitiesPlanner({ navigation, route }) {
-  const { destination, startDate, endDate } = route.params || {};
+  const { apiKey, city, destination, startDate, endDate, srcLat, srcLong, destLat, destLong } = route.params;
+
+  console.log(startDate);
+
   const [plannedActivities, setPlannedActivities] = useState([]);
   const [selectedActivityIndex, setSelectedActivityIndex] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -54,6 +63,68 @@ export default function ActivitiesPlanner({ navigation, route }) {
     const parsed = new Date(dateStr);
     return isNaN(parsed) ? 'Invalid Date' : format(parsed, 'dd-MM-yyyy');
   };
+
+
+
+  async function handlePress() {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("User not logged in");
+        return;
+      }
+  
+      const userEmail = user.email;
+  
+      await addDoc(collection(db, "places"), {
+        DateVisited: startDate,
+        email: userEmail,
+        location: destination,
+      });
+  
+      for (const activity of plannedActivities) {
+        await addDoc(collection(db, "activities"), {
+          email: userEmail,
+          location: destination,
+          name: activity.name,
+        });
+  
+        await addDoc(collection(db, "activitiesDetails"), {
+          email: userEmail,
+          location: destination,
+          name: activity.name,
+          visitingDate: activity.date,
+          visitingTime: activity.time,
+        });
+  
+        await addDoc(collection(db, "placesActivities"), {
+          DateVisited: activity.date,
+          activityName: activity.name,
+          email: userEmail,
+          location: destination,
+        });
+      }
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'AppTabs',
+            state: {
+              routes: [{ name: 'Home' }],
+            },
+          },
+        ],
+      });
+      
+      alert("Activities saved successfully!");
+  
+    } catch (error) {
+      console.error("Error saving to Firebase:", error);
+      alert("Failed to save activities.");
+    }
+  }
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -117,24 +188,34 @@ export default function ActivitiesPlanner({ navigation, route }) {
       </ScrollView>
 
       {showDatePicker && selectedActivityIndex !== null && (
-        <DateTimePicker
-          value={
-            plannedActivities[selectedActivityIndex]?.date
-              ? new Date(plannedActivities[selectedActivityIndex].date)
-              : new Date()
-          }
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) {
-              const updated = [...plannedActivities];
-              updated[selectedActivityIndex].date = selectedDate.toISOString();
-              setPlannedActivities(updated);
-            }
-          }}
-        />
-      )}
+  <DateTimePicker
+    value={
+      plannedActivities[selectedActivityIndex]?.date
+        ? new Date(plannedActivities[selectedActivityIndex].date)
+        : new Date()
+    }
+    mode="date"
+    display="default"
+    onChange={(event, selectedDate) => {
+      setShowDatePicker(false);
+
+      if (!selectedDate) return;
+
+      const selected = new Date(selectedDate);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (selected >= start && selected <= end) {
+        const updated = [...plannedActivities];
+        updated[selectedActivityIndex].date = selected.toISOString();
+        setPlannedActivities(updated);
+      } else {
+        alert("Please make sure your dates are between your start and end date");
+      }
+    }}
+  />
+)}
+
 
       {showTimePicker && selectedActivityIndex !== null && (
         <DateTimePicker
@@ -153,9 +234,14 @@ export default function ActivitiesPlanner({ navigation, route }) {
               const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
               const formattedTime = `${hours}:${minutes}`;
           
+              const selectedDate = plannedActivities[selectedActivityIndex]?.date;
+
+              console.log(selectedDate)
+          
               const isConflict = plannedActivities.some((activity, idx) =>
                 idx !== selectedActivityIndex &&
-                activity.time === formattedTime
+                activity.time === formattedTime &&
+                activity.date === selectedDate
               );
           
               if (isConflict) {
@@ -169,10 +255,11 @@ export default function ActivitiesPlanner({ navigation, route }) {
             }
           }}
           
+          
         />
       )}
 
-      <TouchableOpacity style={styles.voyonButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.voyonButton} onPress={() => handlePress()}>
         <Text style={styles.voyonButtonText}>Voyon IT!</Text>
         <Ionicons name="arrow-forward" size={28} color="#fff" style={{ marginLeft: 30 }} />
       </TouchableOpacity>

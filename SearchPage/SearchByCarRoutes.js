@@ -9,6 +9,13 @@ import getCoordinatesFromPlaceId from '../fetchData/getCoordinatesFromPlaceId';
 import fetchWeatherForCurrentLocation from '../fetchData/fetchWeatherForCurrentLocation';
 import fetchWeatherAlerts from '../fetchData/fetchWeatherAlerts';
 
+import { getAuth } from "firebase/auth";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import app from "../Firebase/firebaseConfig";
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 export default function SearchByCarRoutes({ navigation, route }) {
   const { apiKey,
     city,
@@ -120,8 +127,44 @@ export default function SearchByCarRoutes({ navigation, route }) {
                       destLat: destData.latitude,
                       destLong: destData.longitude
                   });
-
   };
+
+
+  const SaveRouteData = async () => {
+
+    const user = auth.currentUser;
+      if (!user) {
+        alert("User not logged in");
+        return;
+      }
+  
+      const userEmail = user.email;
+
+      try{
+
+        await addDoc(collection(db, "Routes"), {
+          email: userEmail,
+          from: city,
+          to: destination,
+          originLat: originData.latitude,
+          originLong: originData.longitude,
+          destLat: destData.latitude,
+          destLong: destData.longitude,
+          mode:"car"   
+      });
+
+      alert("Routed Saved Successfully!")
+
+      }
+
+      catch(error){
+
+
+        console.log("Error: ", error);
+
+
+      }
+};
   
 
   return (
@@ -170,6 +213,12 @@ export default function SearchByCarRoutes({ navigation, route }) {
           <Text style={styles.infoLabel}>Weather Alerts</Text>
           <WeatherStatusCard alerts={weatherAlerts} />
         </View>
+
+
+        <TouchableOpacity style={styles.backButton} onPress={SaveRouteData}>
+          <Text style={styles.infoLabel}>Save Route Details</Text>
+        </TouchableOpacity>
+
       </ScrollView>
 
            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>

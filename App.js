@@ -41,6 +41,7 @@ import ActivitiesPlanningPage from './ActivitiesSubPages/ActivitiesPlanningPage'
 import ActivitiesQueue from './ActivitiesSubPages/ActivitiesQueue';
 import ActivitiesPlanner from './ActivitiesSubPages/ActivitiesPlanner';
 import FlightsInfo from './SearchPage/FlightsInfo';
+import RoutesCar from './RoutesByCarPage/RoutesCar';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -147,32 +148,7 @@ export default function App() {
           </>
         )}
         <Stack.Screen name="CountryContainers" component={CountryContainers} />
-        <Stack.Screen
-          name="ActivitiesPlanningPage"
-          component={ActivitiesPlanningPage}
-        />
-        <Stack.Screen name="ActivitiesQueue" component={ActivitiesQueue} />
-        <Stack.Screen name="PlaceDetails" component={PlaceDetails} />
-        <Stack.Screen
-          name="PopularCountriesPlaces"
-          component={PopularCountriesPlaces}
-        />
-        <Stack.Screen name="SearchByAir" component={SearchByAir} />
-        <Stack.Screen name="SearchByCar" component={SearchByCar} />
-        <Stack.Screen
-          name="SearchByCarRoutes"
-          component={SearchByCarRoutes}
-        />
-        <Stack.Screen
-          name="SearchByAirFlights"
-          component={SearchByAirFlights}
-        />
-        <Stack.Screen
-          name="PlacesSubPage"
-          component={PlacesSubPage}
-        />
         <Stack.Screen name = "FlightsInfo" component={FlightsInfo}/>
-        <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
         <Stack.Screen name ="ActivitiesPlanningPage" component={ActivitiesPlanningPage}/>
         <Stack.Screen name ="ActivitiesQueue" component={ActivitiesQueue}/>
         <Stack.Screen name ="ActivitiesPlanner" component={ActivitiesPlanner}/>
@@ -183,7 +159,7 @@ export default function App() {
         <Stack.Screen name ="SearchByCarRoutes" component={SearchByCarRoutes}/>
         <Stack.Screen name = "SearchByAirFlights" component={SearchByAirFlights}/>
         <Stack.Screen name ="PlacesSubPage" component={PlacesSubPage}/>
-        
+        <Stack.Screen name ="RoutesByCarPage" component={RoutesCar}/>
 
       </Stack.Navigator>
     </NavigationContainer>

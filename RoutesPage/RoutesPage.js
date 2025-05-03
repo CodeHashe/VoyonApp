@@ -138,9 +138,13 @@ const RoutesPage = () => {
       style={styles.transportButton}
       onPress={() => {
         if (item.mode === "air") {
-          navigation.navigate('RoutesByAirPage', { routeId: item.id });
+          navigation.navigate('RoutesByAirPage', { origin: item.from, destination: item.to });
         } else {
-          navigation.navigate('byCarPage', { routeId: item.id });
+          navigation.navigate('RoutesByCarPage', {
+            apiKey,
+            from: item.from,
+            to:   item.to,   
+          });
         }
       }}
     >
