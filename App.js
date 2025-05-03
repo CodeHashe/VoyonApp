@@ -1,29 +1,37 @@
-// App.js
-
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { NavigationContainer, TabActions } from '@react-navigation/native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+} from 'react-native';
+import {
+  NavigationContainer,
+  TabActions,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { auth } from "./Firebase/firebaseConfig";
-import * as Font from "expo-font"; 
-import * as Location from 'expo-location';
+import { auth } from './Firebase/firebaseConfig';
+import * as Font from 'expo-font';
 
-import HomeIcon from "./assets/Home.svg"; 
-import RoutesIcon from "./assets/Route.svg";
-import ActivitiesIcon from "./assets/Activities.svg";
-import PlacesIcon from "./assets/Places.svg";
-import AccountIcon from "./assets/Accounts.svg";
+import HomeIcon from './assets/Home.svg';
+import RoutesIcon from './assets/Route.svg';
+import ActivitiesIcon from './assets/Activities.svg';
+import PlacesIcon from './assets/Places.svg';
+import AccountIcon from './assets/Accounts.svg';
 
 import LaunchPage from './LaunchPage/LaunchPage';
-import SignInScreen from "./SignInPage/SignInPage";
-import SignUpScreen from "./SignUpPage/SignUpPage";
+import SignInScreen from './SignInPage/SignInPage';
+import SignUpScreen from './SignUpPage/SignUpPage';
 import VerificationPage from './SignUpPage/VerificationPage';
 import ResetPasswordPage from './ResetPasswordPage/ResetPassword';
 
-import HomeScreen from "./HomePage/HomePage";
-import RoutesScreen from "./RoutesPage/RoutesPage";
-import PlacesPage from "./PlacesPage/PlacesPage";
+import HomeScreen from './HomePage/HomePage';
+import RoutesScreen from './RoutesPage/RoutesPage';
+import PlacesPage from './PlacesPage/PlacesPage';
 import AccountsPage from './AccountsPage/AccountsPage';
 import ActivitiesPage from './ActivitiesPage/ActivitiesPage';
 
@@ -42,12 +50,29 @@ import ActivitiesQueue from './ActivitiesSubPages/ActivitiesQueue';
 import ActivitiesPlanner from './ActivitiesSubPages/ActivitiesPlanner';
 import FlightsInfo from './SearchPage/FlightsInfo';
 import RoutesCar from './RoutesByCarPage/RoutesCar';
-import RoutesAir from './RoutesByAirPage/RoutesAir';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function CustomTabBar({ state, descriptors, navigation }) {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  if (isKeyboardVisible) return null;
+
   const icons = {
     Home: <HomeIcon width={24} height={24} />,
     Routes: <RoutesIcon width={24} height={24} />,
@@ -107,17 +132,17 @@ export default function App() {
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
-        "Vilonti-Regular": require("./assets/fonts/Vilonti-Regular.ttf"),
-        "Vilonti-Bold": require("./assets/fonts/Vilonti-Bold.ttf"),
-        "Vilonti-Black": require("./assets/fonts/Vilonti-ExtraBlack.ttf"),
-        "Vilonti-Medium": require("./assets/fonts/Vilonti-Medium.ttf"),
+        'Vilonti-Regular': require('./assets/fonts/Vilonti-Regular.ttf'),
+        'Vilonti-Bold': require('./assets/fonts/Vilonti-Bold.ttf'),
+        'Vilonti-Black': require('./assets/fonts/Vilonti-ExtraBlack.ttf'),
+        'Vilonti-Medium': require('./assets/fonts/Vilonti-Medium.ttf'),
       });
       setFontsLoaded(true);
     }
     loadFonts();
 
     const unsubscribe = auth.onAuthStateChanged((authenticatedUser) => {
-      console.log("Auth State Changed:", authenticatedUser);
+      console.log('Auth State Changed:', authenticatedUser);
       setUser(authenticatedUser);
     });
     return unsubscribe;
@@ -132,38 +157,43 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          <>
-            <Stack.Screen name="AppTabs" component={AppTabs} />
-            <Stack.Screen name="RoutesByAirPage" component={RoutesByAirPage} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Launch" component={LaunchPage} />
-            <Stack.Screen name="SignIn" component={SignInScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Verification" component={VerificationPage} />
-            <Stack.Screen name="ResetPassword" component={ResetPasswordPage} />
-          </>
-        )}
-        <Stack.Screen name="CountryContainers" component={CountryContainers} />
-        <Stack.Screen name = "FlightsInfo" component={FlightsInfo}/>
-        <Stack.Screen name ="ActivitiesPlanningPage" component={ActivitiesPlanningPage}/>
-        <Stack.Screen name ="ActivitiesQueue" component={ActivitiesQueue}/>
-        <Stack.Screen name ="ActivitiesPlanner" component={ActivitiesPlanner}/>
-        <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
-        <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
-        <Stack.Screen name="SearchByAir" component={SearchByAir}/>
-        <Stack.Screen name="SearchByCar" component={SearchByCar}/>
-        <Stack.Screen name ="SearchByCarRoutes" component={SearchByCarRoutes}/>
-        <Stack.Screen name = "SearchByAirFlights" component={SearchByAirFlights}/>
-        <Stack.Screen name ="PlacesSubPage" component={PlacesSubPage}/>
-        <Stack.Screen name ="RoutesByCarPage" component={RoutesCar}/>
-
-      </Stack.Navigator>
-    </NavigationContainer>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {user ? (
+            <>
+              <Stack.Screen name="AppTabs" component={AppTabs} />
+              <Stack.Screen name="RoutesByAirPage" component={RoutesByAirPage} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Launch" component={LaunchPage} />
+              <Stack.Screen name="SignIn" component={SignInScreen} />
+              <Stack.Screen name="SignUp" component={SignUpScreen} />
+              <Stack.Screen name="Verification" component={VerificationPage} />
+              <Stack.Screen name="ResetPassword" component={ResetPasswordPage} />
+            </>
+          )}
+          <Stack.Screen name="CountryContainers" component={CountryContainers} />
+          <Stack.Screen name="FlightsInfo" component={FlightsInfo} />
+          <Stack.Screen name="ActivitiesPlanningPage" component={ActivitiesPlanningPage} />
+          <Stack.Screen name="ActivitiesQueue" component={ActivitiesQueue} />
+          <Stack.Screen name="ActivitiesPlanner" component={ActivitiesPlanner} />
+          <Stack.Screen name="PlaceDetails" component={PlaceDetails} />
+          <Stack.Screen name="PopularCountriesPlaces" component={PopularCountriesPlaces} />
+          <Stack.Screen name="SearchByAir" component={SearchByAir} />
+          <Stack.Screen name="SearchByCar" component={SearchByCar} />
+          <Stack.Screen name="SearchByCarRoutes" component={SearchByCarRoutes} />
+          <Stack.Screen name="SearchByAirFlights" component={SearchByAirFlights} />
+          <Stack.Screen name="PlacesSubPage" component={PlacesSubPage} />
+          <Stack.Screen name="RoutesByCarPage" component={RoutesCar} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -171,45 +201,45 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   tabBarContainer: {
-    flexDirection: "row",
-    backgroundColor: "#010F29",
+    flexDirection: 'row',
+    backgroundColor: '#010F29',
     borderRadius: 30,
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
     left: 20,
     right: 20,
     height: 70,
-    alignItems: "center",
-    justifyContent: "space-around",
+    alignItems: 'center',
+    justifyContent: 'space-around',
     elevation: 5,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 10
+    shadowRadius: 10,
   },
   tabItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
   tabText: {
-    fontFamily: "Vilonti-Bold",
+    fontFamily: 'Vilonti-Bold',
     fontSize: 12,
-    color: "#FFFFFF",
-    marginTop: 5
+    color: '#FFFFFF',
+    marginTop: 5,
   },
   activeText: {
-    color: "#FFFFFF"
+    color: '#FFFFFF',
   },
   activeIndicator: {
-    position: "absolute",
+    position: 'absolute',
     width: 80,
     height: 70,
-    backgroundColor: "#234F9B",
+    backgroundColor: '#234F9B',
     borderRadius: 30,
-    zIndex: -1
-  }
+    zIndex: -1,
+  },
 });
