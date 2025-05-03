@@ -229,7 +229,7 @@ function WeatherStatusCard({ alerts }) {
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff'},
+  container: { flex: 1, backgroundColor: '#FFFFFF'},
   header: { flexDirection: 'row', alignItems: 'center', padding: 16 },
   backButton: { padding: 8, marginRight: 8 },
   headerTitle: { fontSize: 20, fontFamily: 'Vilonti-Bold', color: '#091A41', flexShrink: 1 },
@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoSection: { width: '90%', marginVertical: 10, alignItems: 'center' },
+  
   infoLabel: { fontSize: 18, fontFamily: 'Vilonti-Bold', color: '#091A41', marginBottom: 8 },
   infoText: { fontSize: 24, fontFamily: 'Vilonti-Bold', color: '#004080' },
   card: {

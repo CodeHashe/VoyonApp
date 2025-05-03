@@ -119,8 +119,8 @@ export default function ActivitiesPlanningPage({ navigation, route }) {
       </ScrollView>
 
       <View style={styles.planButtonContainer}>
-        <TouchableOpacity style={styles.planButton}>
-          <Text style={styles.planText}>Plan Your Activities</Text>
+        <TouchableOpacity style={styles.planButton} onPress={() => navigation.navigate('ActivitiesPlanner',{apiKey,city,destination,startDate,endDate,srcLat,srcLong,destLat,destLong}) } >
+          <Text style={styles.planText}>Plan Your Activities</Text> 
           <Ionicons name="arrow-forward" size={20} color="white" style={{ marginLeft: 5 }} />
         </TouchableOpacity>
         <TouchableOpacity

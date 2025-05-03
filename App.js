@@ -39,6 +39,7 @@ import SearchByAirFlights from './SearchPage/SearchByAirFlights';
 import PlacesSubPage from './PlacesPage/PlacesSubPage';
 import ActivitiesPlanningPage from './ActivitiesSubPages/ActivitiesPlanningPage';
 import ActivitiesQueue from './ActivitiesSubPages/ActivitiesQueue';
+import ActivitiesPlanner from './ActivitiesSubPages/ActivitiesPlanner';
 import FlightsInfo from './SearchPage/FlightsInfo';
 
 const Stack = createStackNavigator();
@@ -171,6 +172,19 @@ export default function App() {
           component={PlacesSubPage}
         />
         <Stack.Screen name = "FlightsInfo" component={FlightsInfo}/>
+        <Stack.Screen name ="CountryContainers" component={CountryContainers}/>
+        <Stack.Screen name ="ActivitiesPlanningPage" component={ActivitiesPlanningPage}/>
+        <Stack.Screen name ="ActivitiesQueue" component={ActivitiesQueue}/>
+        <Stack.Screen name ="ActivitiesPlanner" component={ActivitiesPlanner}/>
+        <Stack.Screen name="PlaceDetails" component={PlaceDetails}/>
+        <Stack.Screen name ="PopularCountriesPlaces" component={PopularCountriesPlaces}/>
+        <Stack.Screen name="SearchByAir" component={SearchByAir}/>
+        <Stack.Screen name="SearchByCar" component={SearchByCar}/>
+        <Stack.Screen name ="SearchByCarRoutes" component={SearchByCarRoutes}/>
+        <Stack.Screen name = "SearchByAirFlights" component={SearchByAirFlights}/>
+        <Stack.Screen name ="PlacesSubPage" component={PlacesSubPage}/>
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );
