@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import fetchAirlineImage from '../fetchData/fetchAirlineImage';
+import { db } from '../Firebase/firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
+import {getAuth} from 'firebase/auth'
 
 export default function FlightsInfo({ navigation, route }) {
   const {
@@ -26,37 +29,28 @@ export default function FlightsInfo({ navigation, route }) {
     endDate,
     adults,
     children,
-    infants
+    infants,
+    userEmail
   } = route.params;
-
-  console.log(route.params);
 
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [airlineImage, setAirlineImage] = useState(null);
 
-  // Load airline logo
   useEffect(() => {
     (async () => {
-      console.log('FlightsInfo: fetching logo for', airlineName);
       try {
         const logo = await fetchAirlineImage(airlineName);
-        console.log('FlightsInfo: logo URL:', logo);
         setAirlineImage(logo);
       } catch (err) {
-        console.error('FlightsInfo: logo error:', err);
+        console.error('Logo fetch error:', err);
       }
     })();
   }, [airlineName]);
 
   useEffect(() => {
     (async () => {
-      console.log(
-        `FlightsInfo: searching flights from ${srcIATACode} to ${destIATACode}`,
-        { startDate, endDate, adults, children, infants }
-      );
       try {
-        // 1️⃣ Get OAuth token
         const tokenRes = await fetch(
           'https://test.api.amadeus.com/v1/security/oauth2/token',
           {
@@ -66,10 +60,7 @@ export default function FlightsInfo({ navigation, route }) {
           }
         );
         const tokenData = await tokenRes.json();
-        console.log('FlightsInfo: token response', tokenData);
-        if (!tokenData.access_token) {
-          throw new Error('No access_token in Amadeus response');
-        }
+        if (!tokenData.access_token) throw new Error('No access_token in Amadeus response');
         const token = tokenData.access_token;
 
         let url = `https://test.api.amadeus.com/v2/shopping/flight-offers` +
@@ -77,38 +68,24 @@ export default function FlightsInfo({ navigation, route }) {
           `&destinationLocationCode=${destIATACode}` +
           `&departureDate=${startDate}` +
           `&adults=${adults}` +
-          `&children=${children}` +
-          `&infants=${infants}` +
-          `&max=10`;
-        // if round-trip
-        if (endDate) {
-          url += `&returnDate=${endDate}`;
-        }
-        console.log('FlightsInfo: calling URL:', url);
+          `&max=30`;
 
-        // 3️⃣ Fetch offers
+        if (children > 0) url += `&children=${children}`;
+        if (infants > 0) url += `&infants=${infants}`;
+
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
-        console.log('FlightsInfo: offers response:', data);
 
         if (res.status !== 200) {
           const errDetail = data.errors?.[0]?.detail || 'Failed to fetch flights';
           throw new Error(errDetail);
         }
 
-        // 4️⃣ Filter by airline
-        const filtered =
-          data.data?.filter(offer =>
-            offer.itineraries.some(it =>
-              it.segments.some(s => s.carrierCode === airlineIATACode)
-            )
-          ) || [];
-        console.log(`FlightsInfo: ${filtered.length} flights after filtering`);
-        setFlights(filtered);
+        setFlights(data.data || []);
       } catch (error) {
-        console.error('FlightsInfo: fetch error:', error);
+        console.error('Fetch error:', error);
         Alert.alert('Error', error.message, [
           { text: 'OK', onPress: () => navigation.goBack() }
         ]);
@@ -116,11 +93,53 @@ export default function FlightsInfo({ navigation, route }) {
         setLoading(false);
       }
     })();
-  }, [airlineIATACode, srcIATACode, destIATACode]);
+  }, [srcIATACode, destIATACode]);
+
+  const saveFlight = async (flight) => {
+    try {
+      const auth = getAuth();
+      const userEmail = auth.currentUser?.email;
+  
+      const sanitizedSegments = flight.itineraries[0].segments.map((segment) => ({
+        departure: {
+          iataCode: segment.departure.iataCode,
+          at: segment.departure.at,
+        },
+        arrival: {
+          iataCode: segment.arrival.iataCode,
+          at: segment.arrival.at,
+        },
+        carrierCode: segment.carrierCode,
+        number: segment.number,
+        aircraft: {
+          code: segment.aircraft?.code,
+        },
+        duration: segment.duration,
+      }));
+  
+      await addDoc(collection(db, 'Routes'), {
+        email: userEmail,
+        airline: airlineName,
+        source: city,
+        destination: destination,
+        sourceIATA: srcIATACode,
+        destinationIATA: destIATACode,
+        segments: sanitizedSegments,
+        price: flight.price.total,
+        currency: flight.price.currency,
+        mode: "air"
+      });
+  
+      Alert.alert('Saved!', 'Flight saved to your routes.');
+    } catch (error) {
+      console.error('Error saving flight:', error);
+      Alert.alert('Error', 'Failed to save flight.');
+    }
+  };
+  
 
   return (
     <View style={styles.screen}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#010F29" />
@@ -128,41 +147,76 @@ export default function FlightsInfo({ navigation, route }) {
         <Text style={styles.headerTitle}>Flights to {destination}</Text>
       </View>
 
-      {/* Airline Info */}
       <View style={styles.centered}>
         <Text style={styles.airlineName}>{airlineName}</Text>
         {airlineImage && <Image source={{ uri: airlineImage }} style={styles.logo} />}
       </View>
 
-      {/* Flights List */}
       {loading ? (
         <ActivityIndicator size="large" color="#010F29" style={{ marginTop: 20 }} />
       ) : (
         <ScrollView style={styles.flightList} contentContainerStyle={{ paddingBottom: 60 }}>
-          {flights.map((flight, idx) => {
-            const seg = flight.itineraries[0].segments[0];
-            const time = new Date(seg.departure.at).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true
-            });
-            console.log(`Flight ${idx}: ${seg.departure.iataCode} @ ${time}`);
-            return (
-              <View style={styles.card} key={idx}>
-                <View style={styles.cardContent}>
-                  <View>
-                    <Text style={styles.cardLabel}>Departure</Text>
-                    <Text style={styles.cardTime}>{time} PKT</Text>
-                    <Text style={styles.cardAirport}>{seg.departure.iataCode}</Text>
+          {flights.length === 0 ? (
+            <Text style={{ textAlign: 'center', marginTop: 20, color: '#555' }}>
+              No flights found.
+            </Text>
+          ) : (
+            flights.map((flight, idx) => {
+              const segments = flight.itineraries[0].segments;
+
+              return (
+                <View style={styles.card} key={idx}>
+                  <View style={[styles.cardContent, { justifyContent: 'space-between' }]}>
+                    <Text style={{ color: '#fff', fontSize: 14, fontFamily: 'Vilonti-Bold' }}>
+                      {segments.length === 1 ? 'Direct Flight' : 'Connecting Flight'}
+                    </Text>
+                    <TouchableOpacity onPress={() => saveFlight(flight)}>
+                      <Ionicons name="add-circle" size={24} color="#fff" />
+                    </TouchableOpacity>
                   </View>
-                  {airlineImage && (
-                    <Image source={{ uri: airlineImage }} style={styles.cardLogo} />
-                  )}
-                  <Ionicons name="arrow-forward" size={24} color="white" />
+
+                  {segments.map((seg, segIdx) => {
+                    const departure = new Date(seg.departure.at);
+                    const arrival = new Date(seg.arrival.at);
+
+                    const formatDate = (date) =>
+                      date.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+                    const formatTime = (date) =>
+                      date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                    return (
+                      <View key={segIdx} style={[styles.cardContent, { marginTop: 8 }]}>
+                        <View>
+                          <Text style={styles.cardLabel}>From</Text>
+                          <Text style={styles.cardTime}>{formatTime(departure)}</Text>
+                          <Text style={styles.cardAirport}>{seg.departure.iataCode}</Text>
+                          <Text style={styles.cardDate}>{formatDate(departure)}</Text>
+                        </View>
+
+                        {airlineImage && (
+                          <Image source={{ uri: airlineImage }} style={styles.cardLogo} />
+                        )}
+
+                        <Ionicons name="airplane" size={20} color="white" />
+
+                        <View style={{ alignItems: 'flex-end' }}>
+                          <Text style={styles.cardLabel}>To</Text>
+                          <Text style={styles.cardTime}>{formatTime(arrival)}</Text>
+                          <Text style={styles.cardAirport}>{seg.arrival.iataCode}</Text>
+                          <Text style={styles.cardDate}>{formatDate(arrival)}</Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+
+                  <Text style={styles.priceTag}>
+                    {flight.price.total} {flight.price.currency}
+                  </Text>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })
+          )}
         </ScrollView>
       )}
     </View>
@@ -219,9 +273,19 @@ const styles = StyleSheet.create({
   cardAirport: {
     color: '#fff', fontSize: 12, fontFamily: 'Vilonti-Regular'
   },
+  cardDate: {
+    color: '#fff', fontSize: 12, fontFamily: 'Vilonti-Regular', marginTop: 4
+  },
   cardLogo: {
     width: 40,
     height: 20,
     resizeMode: 'contain'
+  },
+  priceTag: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Vilonti-Bold',
+    textAlign: 'right',
+    marginTop: 10
   }
 });

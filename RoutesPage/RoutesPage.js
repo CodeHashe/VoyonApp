@@ -99,8 +99,8 @@ const RoutesPage = () => {
 
       for (const route of userRoutes) {
         if (!srcroutesImages[route.from] || !destroutesImages[route.to]) {
-          const destplaceID = await fetchPlaceID(route.to);
-          const srcplaceID = await fetchPlaceID(route.from);
+          const destplaceID = await fetchPlaceID(route.to || route.destination);
+          const srcplaceID = await fetchPlaceID(route.from || route.source);
 
           if (destplaceID && srcplaceID) {
             const imageUrlsrc = await fetchLocationImage(srcplaceID);
@@ -123,8 +123,8 @@ const RoutesPage = () => {
   const renderItem = ({ item }) => (
     <View style={styles.routeCard}>
       
-      {srcroutesImages[item.from] ? (
-        <Image source={{ uri: srcroutesImages[item.from] }} style={styles.cityImage} />
+      {srcroutesImages[item.from || item.source] ? (
+        <Image source={{ uri: srcroutesImages[item.from || item.source] }} style={styles.cityImage} />
       ) : (
         <ActivityIndicator size="large" color="#fff" style={{ marginHorizontal: 5 }} />
       )}
@@ -132,7 +132,7 @@ const RoutesPage = () => {
   <View style={styles.routeTextContainer}>
   <View style={{ flexDirection: "row", alignItems: "center" }}>
     <Text style={styles.routeText}>
-      {item.from} to {item.to}
+      {item.from || item.source} to {item.to || item.destination}
     </Text>
     <TouchableOpacity
       style={styles.transportButton}

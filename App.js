@@ -42,6 +42,7 @@ import ActivitiesQueue from './ActivitiesSubPages/ActivitiesQueue';
 import ActivitiesPlanner from './ActivitiesSubPages/ActivitiesPlanner';
 import FlightsInfo from './SearchPage/FlightsInfo';
 import RoutesCar from './RoutesByCarPage/RoutesCar';
+import RoutesAir from './RoutesByAirPage/RoutesAir';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

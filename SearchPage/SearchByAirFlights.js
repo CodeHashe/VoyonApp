@@ -12,6 +12,7 @@ import {
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import fetchAirlineImage from '../fetchData/fetchAirlineImage';
+import { format } from 'date-fns-tz';
 
 export default function SearchByAirFlights({ navigation, route }) {
   const {
@@ -37,17 +38,16 @@ export default function SearchByAirFlights({ navigation, route }) {
   const [carriers, setCarriers] = useState({});
   const [airlineImages, setAirlineImages] = useState({});
   const [loading, setLoading] = useState(true);
+  const [srcTimeZone, setSrcTimeZone] = useState('UTC');
+  const [destTimeZone, setDestTimeZone] = useState('UTC');
 
   async function authorizeAmadeus(key, secret) {
     const body = `grant_type=client_credentials&client_id=${key}&client_secret=${secret}`;
-    const res = await fetch(
-      'https://test.api.amadeus.com/v1/security/oauth2/token',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
-      }
-    );
+    const res = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
     return (await res.json()).access_token;
   }
 
@@ -69,6 +69,16 @@ export default function SearchByAirFlights({ navigation, route }) {
     throw new Error(`Could not geocode city: ${name}`);
   }
 
+  async function getTimeZone(lat, lng, apiKey) {
+    const timestamp = Math.floor(Date.now() / 1000);
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=${timestamp}&key=${apiKey}`
+    );
+    const json = await res.json();
+    if (json.status === 'OK') return json.timeZoneId;
+    throw new Error('Failed to fetch timezone: ' + json.status);
+  }
+
   async function fetchFlights(token, origin, dest) {
     const url =
       `https://test.api.amadeus.com/v2/shopping/flight-offers` +
@@ -88,18 +98,15 @@ export default function SearchByAirFlights({ navigation, route }) {
   function categorizeFlights(all) {
     const direct = all.filter(f => f.itineraries.every(i => i.segments.length === 1));
     const connecting = all.filter(f => f.itineraries.some(i => i.segments.length > 1));
-    const best = all.slice(0, 3);
+    const sorted = [...all].sort((a, b) => a.price.total - b.price.total);
+    const best = sorted.slice(0, 5);
     return { direct, connecting, best };
   }
 
   async function loadAirlineImages(flights, carriersDict) {
     if (!flights || !carriersDict) return;
     const codes = new Set();
-    flights.forEach(f =>
-      f.itineraries.forEach(i =>
-        i.segments.forEach(s => codes.add(s.carrierCode))
-      )
-    );
+    flights.forEach(f => f.itineraries.forEach(i => i.segments.forEach(s => codes.add(s.carrierCode))));
     const map = {};
     await Promise.all(
       [...codes].map(async code => {
@@ -115,17 +122,16 @@ export default function SearchByAirFlights({ navigation, route }) {
   useEffect(() => {
     (async () => {
       try {
-        // 1) Location & origin airport
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           Alert.alert('Permission denied', 'Location is required.');
           navigation.navigate('ActivitiesPlanningPage');
           return;
         }
+
         const { coords } = await Location.getCurrentPositionAsync();
         setSrcCoords({ lat: coords.latitude, long: coords.longitude });
 
-        // 2) Auth & IATAs
         const token = await authorizeAmadeus(apiKey, clientSecret);
         const origin = await getNearestAirportIATA(coords.latitude, coords.longitude, token);
         setOriginIATA(origin);
@@ -133,10 +139,15 @@ export default function SearchByAirFlights({ navigation, route }) {
         const { lat, lng } = await getCityCoordinates(destination, googleApiKey);
         setDestCoords({ lat, long: lng });
         const dest = await getNearestAirportIATA(lat, lng, token);
-        console.log("Destination: ", dest);
         setDestIATA(dest);
 
-        // 3) Fetch flights
+        const [srcTZ, destTZ] = await Promise.all([
+          getTimeZone(coords.latitude, coords.longitude, googleApiKey),
+          getTimeZone(lat, lng, googleApiKey)
+        ]);
+        setSrcTimeZone(srcTZ);
+        setDestTimeZone(destTZ);
+
         const { flights: allFlights, carriers: carriersDict } = await fetchFlights(token, origin, dest);
 
         if (allFlights.length === 0) {
@@ -154,7 +165,6 @@ export default function SearchByAirFlights({ navigation, route }) {
           return;
         }
 
-        // 4) Categorize + logos
         const { direct, connecting, best } = categorizeFlights(allFlights);
         setDirectFlights(direct);
         setConnectingFlights(connecting);
@@ -171,8 +181,10 @@ export default function SearchByAirFlights({ navigation, route }) {
     })();
   }, []);
 
-  const extractCodes = list =>
-    [...new Set(list.flatMap(f => f.itineraries.flatMap(i => i.segments.map(s => s.carrierCode))))];
+  const formatDateTime = (isoString, timeZone) => {
+    const date = new Date(isoString);
+    return format(date, 'yyyy-MM-dd hh:mm aaaa (zzz)', { timeZone });
+  };
 
   const handlePress = (airlineCode, airlineName) => {
     navigation.navigate('FlightsInfo', {
@@ -192,18 +204,45 @@ export default function SearchByAirFlights({ navigation, route }) {
     });
   };
 
-  const renderCard = code => (
-    <TouchableOpacity
-      key={code}
-      style={styles.card}
-      onPress={() => handlePress(code, carriers[code])}
-    >
-      {airlineImages[code] && (
-        <Image source={{ uri: airlineImages[code] }} style={styles.cardLogo} />
-      )}
-      <Text style={styles.cardText}>{carriers[code] || code}</Text>
-    </TouchableOpacity>
-  );
+  function renderFlightList(title, flights) {
+    return (
+      <>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {flights.length === 0 ? (
+          <Text style={styles.noFlightsText}>No flights found.</Text>
+        ) : (
+          flights.map((flight, index) => {
+            const segment = flight.itineraries[0].segments[0];
+            const carrierCode = segment.carrierCode;
+            const airlineName = carriers[carrierCode] || carrierCode;
+            const departureTime = segment.departure.at;
+            const arrivalTime = segment.arrival.at;
+            const price = flight.price.total;
+
+            const formattedDeparture = formatDateTime(departureTime, srcTimeZone);
+            const formattedArrival = formatDateTime(arrivalTime, destTimeZone);
+
+            return (
+              <TouchableOpacity
+                key={index}
+                style={styles.flightCard}
+                onPress={() => handlePress(carrierCode, airlineName)}
+              >
+                {airlineImages[carrierCode] && (
+                  <Image source={{ uri: airlineImages[carrierCode] }} style={styles.flightLogo} />
+                )}
+                <View>
+                  <Text style={styles.cardText}>{airlineName} - ${price}</Text>
+                  <Text style={styles.flightTime}>Departure ({city}): {formattedDeparture}</Text>
+                  <Text style={styles.flightTime}>Arrival ({destination}): {formattedArrival}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })
+        )}
+      </>
+    );
+  }
 
   if (loading) {
     return (
@@ -215,7 +254,6 @@ export default function SearchByAirFlights({ navigation, route }) {
 
   return (
     <View style={[styles.screen, { marginTop: 20 }]}>
-      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#000" />
@@ -223,24 +261,12 @@ export default function SearchByAirFlights({ navigation, route }) {
         <Text style={styles.headerTitle}>Flights to {destination}</Text>
       </View>
 
-      {/* Flights */}
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
-        {['Direct', 'Connecting', 'Best Offers'].map((title, idx) => {
-          const list = idx === 0 ? directFlights : idx === 1 ? connectingFlights : bestOffers;
-          return (
-            <View key={title}>
-              <Text style={styles.sectionTitle}>
-                {title} Flights to {destination}
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {extractCodes(list).map(renderCard)}
-              </ScrollView>
-            </View>
-          );
-        })}
+        {renderFlightList('Best Offers', bestOffers)}
+        {renderFlightList('Direct Flights', directFlights)}
+        {renderFlightList('Connecting Flights', connectingFlights)}
       </ScrollView>
 
-      {/* Skip Button */}
       <TouchableOpacity
         style={styles.skipButton}
         onPress={() =>
@@ -285,26 +311,33 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8
   },
-  card: {
-    width: 100,
-    height: 120,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginRight: 12,
+  cardText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#010F29'
+  },
+  flightTime: {
+    fontSize: 12,
+    color: '#333',
+    marginTop: 2
+  },
+  flightCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 12,
+    padding: 16,
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
-    elevation: 3
+    elevation: 2
   },
-  cardLogo: { width: 60, height: 30, marginBottom: 8 },
-  cardText: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#010F29',
-    fontFamily: 'Vilonti-Medium'
+  flightLogo: {
+    width: 60,
+    height: 30,
+    marginRight: 12
   },
   skipButton: {
     position: 'absolute',
@@ -324,5 +357,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Vilonti-Bold'
   },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' }
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  noFlightsText: { marginTop: 10, color: '#555', textAlign: 'center' }
 });
