@@ -48,6 +48,9 @@ export default function SearchByAirFlights({ navigation, route }) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body
     });
+
+
+
     return (await res.json()).access_token;
   }
 
@@ -107,6 +110,10 @@ export default function SearchByAirFlights({ navigation, route }) {
     if (!flights || !carriersDict) return;
     const codes = new Set();
     flights.forEach(f => f.itineraries.forEach(i => i.segments.forEach(s => codes.add(s.carrierCode))));
+
+
+
+
     const map = {};
     await Promise.all(
       [...codes].map(async code => {
@@ -122,6 +129,7 @@ export default function SearchByAirFlights({ navigation, route }) {
   useEffect(() => {
     (async () => {
       try {
+
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           Alert.alert('Permission denied', 'Location is required.');
@@ -132,6 +140,7 @@ export default function SearchByAirFlights({ navigation, route }) {
         const { coords } = await Location.getCurrentPositionAsync();
         setSrcCoords({ lat: coords.latitude, long: coords.longitude });
 
+
         const token = await authorizeAmadeus(apiKey, clientSecret);
         const origin = await getNearestAirportIATA(coords.latitude, coords.longitude, token);
         setOriginIATA(origin);
@@ -139,6 +148,7 @@ export default function SearchByAirFlights({ navigation, route }) {
         const { lat, lng } = await getCityCoordinates(destination, googleApiKey);
         setDestCoords({ lat, long: lng });
         const dest = await getNearestAirportIATA(lat, lng, token);
+
         setDestIATA(dest);
 
         const [srcTZ, destTZ] = await Promise.all([
@@ -164,6 +174,7 @@ export default function SearchByAirFlights({ navigation, route }) {
           });
           return;
         }
+
 
         const { direct, connecting, best } = categorizeFlights(allFlights);
         setDirectFlights(direct);
@@ -254,6 +265,7 @@ export default function SearchByAirFlights({ navigation, route }) {
 
   return (
     <View style={[styles.screen, { marginTop: 20 }]}>
+
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#000" />
@@ -261,11 +273,23 @@ export default function SearchByAirFlights({ navigation, route }) {
         <Text style={styles.headerTitle}>Flights to {destination}</Text>
       </View>
 
+
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }}>
         {renderFlightList('Best Offers', bestOffers)}
         {renderFlightList('Direct Flights', directFlights)}
         {renderFlightList('Connecting Flights', connectingFlights)}
+
+
+
+
+
+
+
+
+
+
       </ScrollView>
+
 
       <TouchableOpacity
         style={styles.skipButton}
@@ -328,6 +352,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginBottom: 12,
     borderRadius: 12,
+
+
+
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -338,6 +365,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 30,
     marginRight: 12
+
+
   },
   skipButton: {
     position: 'absolute',

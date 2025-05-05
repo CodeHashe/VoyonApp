@@ -41,7 +41,7 @@ export default function RoutesAir({ navigation }) {
           !segment?.carrierCode ||
           !segment?.number
         ) {
-          return null;
+          return null; // Skip invalid segment
         }
 
         return {

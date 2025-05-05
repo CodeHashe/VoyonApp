@@ -33,14 +33,19 @@ export default function FlightsInfo({ navigation, route }) {
     userEmail
   } = route.params;
 
+
+
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [airlineImage, setAirlineImage] = useState(null);
 
+
   useEffect(() => {
     (async () => {
+
       try {
         const logo = await fetchAirlineImage(airlineName);
+
         setAirlineImage(logo);
       } catch (err) {
         console.error('Logo fetch error:', err);
@@ -50,7 +55,12 @@ export default function FlightsInfo({ navigation, route }) {
 
   useEffect(() => {
     (async () => {
+
+
+
+
       try {
+
         const tokenRes = await fetch(
           'https://test.api.amadeus.com/v1/security/oauth2/token',
           {
@@ -61,6 +71,9 @@ export default function FlightsInfo({ navigation, route }) {
         );
         const tokenData = await tokenRes.json();
         if (!tokenData.access_token) throw new Error('No access_token in Amadeus response');
+
+
+
         const token = tokenData.access_token;
 
         let url = `https://test.api.amadeus.com/v2/shopping/flight-offers` +
@@ -73,10 +86,16 @@ export default function FlightsInfo({ navigation, route }) {
         if (children > 0) url += `&children=${children}`;
         if (infants > 0) url += `&infants=${infants}`;
 
+
+
+
+
+
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
+
 
         if (res.status !== 200) {
           const errDetail = data.errors?.[0]?.detail || 'Failed to fetch flights';
@@ -84,6 +103,14 @@ export default function FlightsInfo({ navigation, route }) {
         }
 
         setFlights(data.data || []);
+
+
+
+
+
+
+
+
       } catch (error) {
         console.error('Fetch error:', error);
         Alert.alert('Error', error.message, [
@@ -140,6 +167,7 @@ export default function FlightsInfo({ navigation, route }) {
 
   return (
     <View style={styles.screen}>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#010F29" />
@@ -147,10 +175,12 @@ export default function FlightsInfo({ navigation, route }) {
         <Text style={styles.headerTitle}>Flights to {destination}</Text>
       </View>
 
+
       <View style={styles.centered}>
         <Text style={styles.airlineName}>{airlineName}</Text>
         {airlineImage && <Image source={{ uri: airlineImage }} style={styles.logo} />}
       </View>
+
 
       {loading ? (
         <ActivityIndicator size="large" color="#010F29" style={{ marginTop: 20 }} />

@@ -4,7 +4,8 @@ import {
 } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, getDocs, collection, query, where, deleteDoc, doc} from 'firebase/firestore';
-import app from '../Firebase/firebaseConfig';
+import app from "../Firebase/firebaseConfig";
+
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 
 const auth = getAuth(app);

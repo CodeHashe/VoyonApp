@@ -122,13 +122,13 @@ const RoutesPage = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.routeCard}>
-      
+
       {srcroutesImages[item.from || item.source] ? (
         <Image source={{ uri: srcroutesImages[item.from || item.source] }} style={styles.cityImage} />
       ) : (
         <ActivityIndicator size="large" color="#fff" style={{ marginHorizontal: 5 }} />
       )}
-  
+
   <View style={styles.routeTextContainer}>
   <View style={{ flexDirection: "row", alignItems: "center" }}>
     <Text style={styles.routeText}>
@@ -158,7 +158,7 @@ const RoutesPage = () => {
   </View>
 </View>
 
-  
+
       <TouchableOpacity
         style={styles.transportButton}
         onPress={() => {
@@ -169,18 +169,18 @@ const RoutesPage = () => {
           }
         }}
       >
-       
+
       </TouchableOpacity>
-  
+
       {destroutesImages[item.to] ? (
         <Image source={{ uri: destroutesImages[item.to] }} style={styles.cityImage} />
       ) : (
         <ActivityIndicator size="small" color="#fff" style={{ marginHorizontal: 5 }} />
       )}
-  
+
     </View>
   );
-  
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#010F29" style={{ marginTop: 20 }} />;
