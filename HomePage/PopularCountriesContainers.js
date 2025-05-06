@@ -82,6 +82,8 @@ const styles = StyleSheet.create({
     fontFamily: "Vilonti-Bold",
     fontSize: 20,
     marginBottom: 10,
+    alignContent:"center",
+    alignSelf:"center",
   },
   itemContainer: {
     width: 150,

@@ -278,16 +278,6 @@ export default function SearchByAirFlights({ navigation, route }) {
         {renderFlightList('Best Offers', bestOffers)}
         {renderFlightList('Direct Flights', directFlights)}
         {renderFlightList('Connecting Flights', connectingFlights)}
-
-
-
-
-
-
-
-
-
-
       </ScrollView>
 
 

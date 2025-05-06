@@ -27,7 +27,7 @@ export default function CurrentLocationContainers(props) {
   return (
     <View style={styles.container}>
       <Text style={styles.headings}>Popular Places to visit in {locationName}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{backgroundColor:"transparent"}}>
         {popularPlaces.map((place, index) => (
           <SubContainer
             key={index}
@@ -44,7 +44,7 @@ export default function CurrentLocationContainers(props) {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: "auto"
+
   },
   headings: {
     fontFamily: "Vilonti-Bold",

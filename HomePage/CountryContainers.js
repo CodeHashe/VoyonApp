@@ -69,6 +69,8 @@ const styles = StyleSheet.create({
     fontFamily:"Vilonti-Bold",
     marginLeft: 10,
     marginBottom: 10,
+    alignContent:"center",
+    alignSelf:"center"
   },
   loadingContainer: {
     flex: 1,

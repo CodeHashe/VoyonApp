@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,24 @@ import {
   Image,
   ActivityIndicator,
   SafeAreaView,
+  RefreshControl,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; 
+import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { getFirestore, getDocs, collection } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import app from "../Firebase/firebaseConfig";
-import { FontAwesome5 } from "@expo/vector-icons";
-
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import VoyonContainer from "../VoyonContainer";
+import fetchPlaceID from "../fetchData/fetchPlaceID";
+import fetchLocationImage from "../fetchData/fetchLocationImage";
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -22,172 +33,182 @@ const db = getFirestore(app);
 // Google API Key
 const apiKey = "AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w";
 
-
-const fetchPlaceID = async (placeName) => {
-  try {
-    const response = await fetch(
-      "https://places.googleapis.com/v1/places:searchText",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": apiKey,
-          "X-Goog-FieldMask": "places.id",
-        },
-        body: JSON.stringify({ textQuery: placeName }),
-      }
-    );
-
-    const result = await response.json();
-    if (result.places && result.places.length > 0) {
-      return result.places[0].id;
-    } else {
-      console.error("No place found for:", placeName);
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching Place ID:", error);
-    return null;
-  }
-};
-
-
-const fetchLocationImage = async (placeID) => {
-  try {
-    const response = await fetch(
-      `https://places.googleapis.com/v1/places/${placeID}?fields=photos&key=${apiKey}`
-    );
-
-    const result = await response.json();
-    if (result.photos && result.photos.length > 0) {
-      const photoRef = result.photos[0].name;
-      return `https://places.googleapis.com/v1/${photoRef}/media?maxWidthPx=400&key=${apiKey}`;
-    } else {
-      console.error("No photos found for place ID:", placeID);
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching location image:", error);
-    return null;
-  }
-};
-
-const RoutesPage = () => {
-  const navigation = useNavigation(); 
+export default function RoutesPage() {
+  const navigation = useNavigation();
 
   const [routes, setRoutes] = useState([]);
   const [srcroutesImages, setsrcRouteImages] = useState({});
   const [destroutesImages, setdestRouteImages] = useState({});
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
+  // Helpers to unify field names
+  const getOrigin = (item) =>
+    item.mode === "air" ? item.source : item.from;
+  const getDestination = (item) =>
+    item.mode === "air" ? item.destination : item.to;
 
-    const fetchRoutes = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+  // Fetch routes + images
+  const fetchRoutes = useCallback(async () => {
+    const user = auth.currentUser;
+    if (!user) return;
 
+    try {
       const snapshot = await getDocs(collection(db, "Routes"));
       const userRoutes = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .filter((route) => route.email === user.email);
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((r) => r.email === user.email);
 
-      if (isMounted) {
-        setRoutes(userRoutes);
-        setLoading(false);
-      }
+      setRoutes(userRoutes);
+      setLoading(false);
 
+      // Preload images
       for (const route of userRoutes) {
-        if (!srcroutesImages[route.from] || !destroutesImages[route.to]) {
-          const destplaceID = await fetchPlaceID(route.to || route.destination);
-          const srcplaceID = await fetchPlaceID(route.from || route.source);
-
-          if (destplaceID && srcplaceID) {
-            const imageUrlsrc = await fetchLocationImage(srcplaceID);
-            const imageUrldest = await fetchLocationImage(destplaceID);
-            if (imageUrlsrc && imageUrldest && isMounted) {
-              setsrcRouteImages((prev) => ({ ...prev, [route.from]: imageUrlsrc }));
-              setdestRouteImages((prev) => ({ ...prev, [route.to]: imageUrldest }));
+        const origin = getOrigin(route);
+        const destination = getDestination(route);
+        if (!srcroutesImages[origin] || !destroutesImages[destination]) {
+          const srcPlaceID = await fetchPlaceID(origin, apiKey);
+          const destPlaceID = await fetchPlaceID(destination, apiKey);
+          if (srcPlaceID && destPlaceID) {
+            const srcImg = await fetchLocationImage(srcPlaceID, apiKey);
+            const destImg = await fetchLocationImage(destPlaceID, apiKey);
+            if (srcImg && destImg) {
+              setsrcRouteImages((p) => ({ ...p, [origin]: srcImg }));
+              setdestRouteImages((p) => ({ ...p, [destination]: destImg }));
             }
           }
         }
       }
-    };
+    } catch (err) {
+      console.error("Error fetching routes:", err);
+    }
+  }, [srcroutesImages, destroutesImages]);
 
+  useEffect(() => {
     fetchRoutes();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  }, [fetchRoutes]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.routeCard}>
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchRoutes();
+    setRefreshing(false);
+  };
 
-      {srcroutesImages[item.from || item.source] ? (
-        <Image source={{ uri: srcroutesImages[item.from || item.source] }} style={styles.cityImage} />
-      ) : (
-        <ActivityIndicator size="large" color="#fff" style={{ marginHorizontal: 5 }} />
-      )}
+  // Delete a route both in Firestore and locally
+  const handleDeleteRoute = async (item) => {
+    const user = auth.currentUser;
+    const userEmail = user?.email;
+    if (!userEmail) return;
 
-  <View style={styles.routeTextContainer}>
-  <View style={{ flexDirection: "row", alignItems: "center" }}>
-    <Text style={styles.routeText}>
-      {item.from || item.source} to {item.to || item.destination}
-    </Text>
-    <TouchableOpacity
-      style={styles.transportButton}
-      onPress={() => {
-        if (item.mode === "air") {
-          navigation.navigate('RoutesByAirPage', { origin: item.from, destination: item.to });
-        } else {
-          navigation.navigate('RoutesByCarPage', {
-            apiKey,
-            from: item.from,
-            to:   item.to,   
-          });
-        }
-      }}
-    >
-      <FontAwesome5
-        name={item.mode === "air" ? "plane" : "car"}
-        size={20}
-        color="white"
-        style={{ marginLeft: 5 }}
-      />
-    </TouchableOpacity>
-  </View>
-</View>
+    const origin = getOrigin(item);
+    const destination = getDestination(item);
 
+    try {
+      const q = query(
+        collection(db, "Routes"),
+        where("email", "==", userEmail),
+        where(item.mode === "air" ? "source" : "from", "==", origin),
+        where(item.mode === "air" ? "destination" : "to", "==", destination)
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        console.warn("No route found to delete.");
+        return;
+      }
+      for (const docSnap of snap.docs) {
+        await deleteDoc(doc(db, "Routes", docSnap.id));
+      }
+      // Update local state
+      setRoutes((prev) =>
+        prev.filter(
+          (r) =>
+            !(
+              getOrigin(r) === origin &&
+              getDestination(r) === destination &&
+              r.mode === item.mode
+            )
+        )
+      );
+    } catch (err) {
+      console.error("Error deleting route:", err);
+    }
+  };
 
-      <TouchableOpacity
-        style={styles.transportButton}
-        onPress={() => {
-          if (item.mode === "air") {
-            navigation.navigate('RoutesByAirPage', { routeId: item.id });
-          } else {
-            navigation.navigate('byCarPage', { routeId: item.id });
-          }
-        }}
-      >
+  const renderItem = ({ item }) => {
+    const origin = getOrigin(item);
+    const destination = getDestination(item);
 
-      </TouchableOpacity>
+    return (
+      <View style={styles.routeCard}>
+        {srcroutesImages[origin] ? (
+          <Image
+            source={{ uri: srcroutesImages[origin] }}
+            style={styles.cityImage}
+          />
+        ) : (
+          <ActivityIndicator size="large" color="#fff" style={{ margin: 5 }} />
+        )}
 
-      {destroutesImages[item.to] ? (
-        <Image source={{ uri: destroutesImages[item.to] }} style={styles.cityImage} />
-      ) : (
-        <ActivityIndicator size="small" color="#fff" style={{ marginHorizontal: 5 }} />
-      )}
+        <View style={styles.routeTextContainer}>
+          <View style={styles.rowCenter}>
+            <Text style={styles.routeText}>
+              {origin} to {destination}
+            </Text>
+            <TouchableOpacity
+              style={styles.transportButton}
+              onPress={() =>
+                item.mode === "air"
+                  ? navigation.navigate("RoutesByAirPage", {
+                      origin,
+                      destination,
+                    })
+                  : navigation.navigate("RoutesByCarPage", {
+                      apiKey,
+                      from: origin,
+                      to: destination,
+                    })
+              }
+            >
+              <FontAwesome5
+                name={item.mode === "air" ? "plane" : "car"}
+                size={20}
+                color="white"
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={[styles.transportButton, { marginTop: 10 }]}
+            onPress={() => handleDeleteRoute(item)}
+          >
+            <Ionicons name="trash-outline" size={22} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
-    </View>
-  );
-
+        {destroutesImages[destination] ? (
+          <Image
+            source={{ uri: destroutesImages[destination] }}
+            style={styles.cityImage}
+          />
+        ) : (
+          <ActivityIndicator size="small" color="#fff" style={{ margin: 5 }} />
+        )}
+      </View>
+    );
+  };
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#010F29" style={{ marginTop: 20 }} />;
+    return (
+      <ActivityIndicator
+        size="large"
+        color="#010F29"
+        style={{ marginTop: 20 }}
+      />
+    );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+    <SafeAreaView style={styles.safeArea}>
+      <VoyonContainer />
       <View style={styles.container}>
         <Text style={styles.header}>Your Planned Routes</Text>
         <FlatList
@@ -195,12 +216,20 @@ const RoutesPage = () => {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </SafeAreaView>
   );
-};
+}
+
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f1f1f1",
+  },
   container: {
     flex: 1,
     padding: 16,
@@ -208,7 +237,6 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 28,
-    fontWeight: "bold",
     fontFamily: "Vilonti-Black",
     color: "#010F29",
     marginBottom: 30,
@@ -229,7 +257,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 130,
     borderRadius: 25,
-    opacity: 0.8,   
+    opacity: 0.8,
   },
   routeTextContainer: {
     flex: 1,
@@ -240,14 +268,15 @@ const styles = StyleSheet.create({
   routeText: {
     fontSize: 20,
     color: "white",
-    fontWeight: "bold",
     textAlign: "center",
+    fontFamily: "Vilonti-Bold",
   },
   transportButton: {
     backgroundColor: "transparent",
     marginLeft: 10,
   },
+  rowCenter: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });
-
-
-export default RoutesPage;

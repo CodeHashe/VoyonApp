@@ -222,7 +222,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 10,
     alignContent: 'center',
-    gap: 4
+    gap: 4,
+    backgroundColor:"transparent"
   },
   countBubble: {
     backgroundColor: '#004080',

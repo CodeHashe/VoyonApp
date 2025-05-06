@@ -105,6 +105,8 @@ export default function ActivitiesPlanner({ navigation, route }) {
         });
       }
 
+      await AsyncStorage.removeItem(`activityCount_${destination}`);
+
       navigation.reset({
         index: 0,
         routes: [

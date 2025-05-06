@@ -198,14 +198,13 @@ export default function HomePage({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
     backgroundColor: '#f5f5f5',
-    marginBottom: 110,
   },
   headerCard: {
-    width: '90%',
-    height: 250,
+    width: '95%',
+    height: 270,
     borderRadius: 35,
+    marginTop:40,
     overflow: 'hidden',
     justifyContent: 'space-between',
     marginBottom: 20,
@@ -222,13 +221,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingTop: 10,
   },
   iconButton: {
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 10,
     borderRadius: 20,
+    marginLeft:15,
+    marginTop:10,
   },
   dropdownContainer: {
     position: 'relative',
@@ -238,6 +237,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 10,
+    marginRight:15,
+    marginTop:10,
     borderRadius: 20,
   },
   dropdownOptions: {
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Vilonti-Bold',
   },
   stackContainer: {
-    width: '90%',
+    width: '100%',
     marginTop: 20,
     marginBottom: 40,
     flexDirection: 'column',

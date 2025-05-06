@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import {
   View,
@@ -57,7 +55,6 @@ export default function AccountsPage({ navigation }) {
             setProfileImage(userData.profileImage);
           }
         } else {
-          // Create user document if it doesn't exist
           const newUserData = {
             firstname: "",
             lastname: "",
@@ -65,7 +62,6 @@ export default function AccountsPage({ navigation }) {
             email: user.email,
             createdAt: new Date(),
           };
-          // Use setDoc instead of updateDoc for a new document
           await setDoc(userDocRef, newUserData);
         }
       } catch (error) {
@@ -84,7 +80,6 @@ export default function AccountsPage({ navigation }) {
   }, []);
 
   const pickImage = async () => {
-    // Request permission
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (status !== "granted") {
@@ -104,7 +99,6 @@ export default function AccountsPage({ navigation }) {
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        // Compress image before uploading
         const compressedImage = await compressImage(result.assets[0].uri);
         uploadImage(compressedImage);
       }
@@ -113,19 +107,14 @@ export default function AccountsPage({ navigation }) {
       Alert.alert("Error", "Failed to pick image. Please try again.");
     }
   };
-
-  // Function to compress image
   const compressImage = async (uri) => {
     try {
       const fileInfo = await FileSystem.getInfoAsync(uri);
       console.log("Original image size:", fileInfo.size);
-
-      // If image is already small, return original
       if (fileInfo.size < 300000) {
         return uri;
       }
 
-      // Determine compression quality based on file size
       let quality = 0.7;
       if (fileInfo.size > 1000000) {
         quality = 0.5;
@@ -134,14 +123,14 @@ export default function AccountsPage({ navigation }) {
         quality = 0.3;
       }
 
-      // Generate a new filename in the cache directory
+      
       const newUri =
         FileSystem.cacheDirectory +
         "compressed_" +
         new Date().getTime() +
         ".jpg";
 
-      // Compress the image
+      
       await FileSystem.manipulateAsync(uri, [], {
         compress: quality,
         format: FileSystem.ManipulateFormat.JPEG,
@@ -156,7 +145,6 @@ export default function AccountsPage({ navigation }) {
       return uri;
     } catch (error) {
       console.error("Error compressing image:", error);
-      // Return original if compression fails
       return uri;
     }
   };
@@ -176,35 +164,32 @@ export default function AccountsPage({ navigation }) {
     }
 
     try {
-      // Convert URI to blob
       const response = await fetch(uri);
       const blob = await response.blob();
 
-      // Create a unique filename with timestamp to avoid cache issues
       const timestamp = new Date().getTime();
       const filename = `profile_${user.uid}_${timestamp}.jpg`;
 
-      // Create a reference to the storage location
       const storageRef = ref(storage, `profileImages/${filename}`);
 
       console.log("Uploading image to:", `profileImages/${filename}`);
       console.log("Image size:", blob.size, "bytes");
 
-      // Use uploadBytesResumable to track progress
+    
       const uploadTask = uploadBytesResumable(storageRef, blob);
 
-      // Listen for state changes, errors, and completion of the upload
+      
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          // Get upload progress
+          
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setUploadProgress(progress);
           console.log("Upload is " + progress + "% done");
         },
         (error) => {
-          // Handle unsuccessful uploads
+          
           console.error("Upload error:", error);
           console.error("Error code:", error.code);
           console.error("Error message:", error.message);
@@ -224,18 +209,18 @@ export default function AccountsPage({ navigation }) {
           setIsUploading(false);
         },
         async () => {
-          // Handle successful uploads
+          
           console.log("Upload completed successfully");
 
           try {
-            // Get the download URL
+            
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             console.log("Download URL:", downloadURL);
 
-            // Update the user's profile in Firestore
+            
             const userDocRef = doc(db, "users", user.uid);
 
-            // Check if document exists first
+           
             const docSnap = await getDoc(userDocRef);
 
             if (docSnap.exists()) {
@@ -244,7 +229,7 @@ export default function AccountsPage({ navigation }) {
                 updatedAt: new Date(),
               });
             } else {
-              // Create the document if it doesn't exist
+              
               await setDoc(userDocRef, {
                 profileImage: downloadURL,
                 email: user.email,
@@ -252,7 +237,7 @@ export default function AccountsPage({ navigation }) {
               });
             }
 
-            // Update the local state
+            
             setProfileImage(downloadURL);
             Alert.alert("Success", "Profile picture updated successfully!");
           } catch (error) {

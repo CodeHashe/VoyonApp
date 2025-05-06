@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Image 
+  View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView
 } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, getDocs, collection, query, where, deleteDoc, doc} from 'firebase/firestore';
 import app from "../Firebase/firebaseConfig";
 
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import VoyonContainer from '../VoyonContainer';
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -183,11 +184,8 @@ export default function PlacesPage({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.topBar}>
-        <Image source={require('../assets/SignInLogo.png')} style={styles.appIcon} />
-        <Text style={styles.headerText}>Voyon</Text>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <VoyonContainer/>
       <Text style={[styles.header, { color: '#010F29', textAlign: 'center' }]}>
         Your Visited Places
       </Text>
@@ -197,12 +195,12 @@ export default function PlacesPage({ navigation }) {
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, marginBottom: 20, backgroundColor: '#f9f9f9' },
+  container: { flex: 1, marginBottom: 20, backgroundColor: '#f9f9f9' },
   topBar: {
     width: 203,
     height: 65,
