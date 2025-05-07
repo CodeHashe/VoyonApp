@@ -3,9 +3,8 @@ import {
   View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Image, SafeAreaView
 } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, getDocs, collection, query, where, deleteDoc, doc} from 'firebase/firestore';
+import { getFirestore, getDocs, collection, query, where, deleteDoc, doc } from 'firebase/firestore';
 import app from "../Firebase/firebaseConfig";
-
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import VoyonContainer from '../VoyonContainer';
 
@@ -61,36 +60,39 @@ const fetchLocationImage = async (placeID) => {
 export default function PlacesPage({ navigation }) {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [imageCache, setImageCache] = useState({});
 
-  // Fetch user’s saved places
-  useEffect(() => {
-    const fetchPlaces = async () => {
-      setLoading(true);
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          console.error('No user is logged in.');
-          setLoading(false);
-          return;
-        }
-
-        const snapshot = await getDocs(collection(db, 'places'));
-        const list = snapshot.docs
-          .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
-          .filter(place => place.email === user.email);
-
-        setPlaces(list);
-      } catch (error) {
-        console.error('Error fetching places:', error);
-      } finally {
-        setLoading(false);
+  const fetchPlaces = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error('No user is logged in.');
+        return;
       }
-    };
-    fetchPlaces();
+
+      const snapshot = await getDocs(collection(db, 'places'));
+      const list = snapshot.docs
+        .map(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
+        .filter(place => place.email === user.email);
+
+      setPlaces(list);
+    } catch (error) {
+      console.error('Error fetching places:', error);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchPlaces();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    fetchPlaces().finally(() => setLoading(false));
   }, []);
 
-  // Preload images for each place
   useEffect(() => {
     const loadImages = async () => {
       const cache = { ...imageCache };
@@ -108,10 +110,8 @@ export default function PlacesPage({ navigation }) {
     if (places.length) loadImages();
   }, [places]);
 
-  // Deletes all place docs and matching activities by city+email
   const deletePlaceAndActivities = async (placeLocation, userEmail) => {
     try {
-      // 1. Delete matching place docs
       const placesQuery = query(
         collection(db, 'places'),
         where('location', '==', placeLocation),
@@ -119,8 +119,7 @@ export default function PlacesPage({ navigation }) {
       );
       const placesSnap = await getDocs(placesQuery);
       const placeDeletes = placesSnap.docs.map(d => deleteDoc(doc(db, 'places', d.id)));
-      
-      // 2. Delete matching activities in placesActivities
+
       const actQuery = query(
         collection(db, 'placesActivities'),
         where('location', '==', placeLocation),
@@ -129,10 +128,8 @@ export default function PlacesPage({ navigation }) {
       const actSnap = await getDocs(actQuery);
       const actDeletes = actSnap.docs.map(d => deleteDoc(doc(db, 'placesActivities', d.id)));
 
-      // wait for all deletions
       await Promise.all([...placeDeletes, ...actDeletes]);
 
-      // 3. Update UI state
       setPlaces(prev => prev.filter(p => p.location !== placeLocation));
       console.log(`Deleted all records for ${placeLocation}`);
     } catch (error) {
@@ -194,6 +191,8 @@ export default function PlacesPage({ navigation }) {
         keyExtractor={item => item.id}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
       />
     </SafeAreaView>
   );

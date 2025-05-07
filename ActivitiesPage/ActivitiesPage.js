@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { 
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl 
+} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import VoyonContainer from '../VoyonContainer';
@@ -8,67 +10,65 @@ import app from "../Firebase/firebaseConfig";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import fetchPlaceID from '../fetchData/fetchPlaceID';
 
-
 const auth = getAuth(app);
-const db   = getFirestore(app);
-
+const db = getFirestore(app);
 const apiKey = 'AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w';
 
-export default function ActivitiesScreen({navigation}) {
+export default function ActivitiesScreen({ navigation }) {
   const [selectedDate, setSelectedDate] = useState('2025-08-17');
   const [activities, setActivities] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const user = auth.currentUser;
   const userEmail = user?.email;
 
-  useEffect(() => {
+  const fetchActivities = async () => {
     if (!userEmail) return;
-    (async () => {
-      try {
-        const q = query(
-          collection(db, 'activitiesDetails'),
-          where('email', '==', userEmail)
-        );
-        const snap = await getDocs(q);
-        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setActivities(docs);
-      } catch (err) {
-        console.error('Error fetching activities:', err);
-      }
-    })();
+    try {
+      const q = query(
+        collection(db, 'activitiesDetails'),
+        where('email', '==', userEmail)
+      );
+      const snap = await getDocs(q);
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setActivities(docs);
+    } catch (err) {
+      console.error('Error fetching activities:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivities();
   }, [userEmail]);
 
-  // helper: get YYYY-MM-DD from ISO or null
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchActivities();
+    setRefreshing(false);
+  };
+
   const isoToYMD = iso => {
     if (!iso) return null;
     const d = new Date(iso);
-    if (isNaN(d)) return null;
-    return d.toISOString().split('T')[0];
+    return isNaN(d) ? null : d.toISOString().split('T')[0];
   };
 
-  // 1️⃣ Build a set of all dates that have at least one activity
   const markedDates = useMemo(() => {
     const m = {};
     activities.forEach(act => {
       const day = isoToYMD(act.visitingDate);
-      if (!day) return;
-      m[day] = { marked: true };
+      if (day) m[day] = { marked: true };
     });
-    // ensure the selectedDate is styled as selected:
-    m[selectedDate] = { ...(m[selectedDate]||{}), selected: true, selectedColor: '#5D5FEF' };
+    m[selectedDate] = { ...(m[selectedDate] || {}), selected: true, selectedColor: '#5D5FEF' };
     return m;
   }, [activities, selectedDate]);
 
-  // 2️⃣ Filter only activities whose date-only matches
-  const activitiesForSelectedDate = activities.filter(act => {
-    return isoToYMD(act.visitingDate) === selectedDate;
-  });
+  const activitiesForSelectedDate = activities.filter(
+    act => isoToYMD(act.visitingDate) === selectedDate
+  );
 
   const handleArrowPress = async (item) => {
     try {
-      console.log(item.place_id)
-      const placeID = await fetchPlaceID(item.name, apiKey); // fetch from your function
-
-      console.log(placeID);
+      const placeID = await fetchPlaceID(item.name, apiKey);
       if (placeID) {
         navigation.navigate('PlaceDetails', {
           placeID,
@@ -83,14 +83,10 @@ export default function ActivitiesScreen({navigation}) {
   };
 
   const handleDelete = async (itemToDelete) => {
-    const user = auth.currentUser;
-    const userEmail = user?.email;
-  
     if (!userEmail) {
       console.warn('User not authenticated');
       return;
     }
-  
     try {
       const q = query(
         collection(db, 'activitiesDetails'),
@@ -98,23 +94,18 @@ export default function ActivitiesScreen({navigation}) {
         where('name', '==', itemToDelete.name),
         where('visitingDate', '==', itemToDelete.visitingDate)
       );
-  
       const snap = await getDocs(q);
-  
-      if (snap.empty) {
-        console.warn('No matching activity found to delete.');
-        return;
-      }
-  
+      if (snap.empty) return;
+
       for (const docSnap of snap.docs) {
         await deleteDoc(doc(db, 'activitiesDetails', docSnap.id));
       }
-  
-      // Update UI
-      setActivities(prev => prev.filter(
-        act => !(act.name === itemToDelete.name && act.visitingDate === itemToDelete.visitingDate)
-      ));
-  
+
+      setActivities(prev =>
+        prev.filter(act =>
+          !(act.name === itemToDelete.name && act.visitingDate === itemToDelete.visitingDate)
+        )
+      );
     } catch (err) {
       console.error('Error deleting activity:', err);
     }
@@ -122,8 +113,7 @@ export default function ActivitiesScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-
-      <VoyonContainer/>
+      <VoyonContainer />
       <Text style={styles.title}>Your Activities</Text>
 
       <Calendar
@@ -137,32 +127,35 @@ export default function ActivitiesScreen({navigation}) {
         style={styles.calendar}
       />
 
-      <ScrollView style={styles.timeline}>
+      <ScrollView
+        style={styles.timeline}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
         {activitiesForSelectedDate.length > 0 ? (
           activitiesForSelectedDate.map((item, idx) => (
             <View key={idx}>
               <Text style={styles.timeText}>
                 {item.visitingTime || 'Time not set'}
               </Text>
-            <View style={styles.card}>
-              <View style={styles.cardContent}>
-                <Text style={styles.cardText}>{item.name}</Text>
-                <View style={styles.cardButtons}>
-                  <TouchableOpacity onPress={() => handleDelete(item)}>
-                    <Ionicons name="trash-outline" size={22} color="#fff" />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleArrowPress(item)}>
-                    <Ionicons name="chevron-forward-outline" size={22} color="#fff" />
-                  </TouchableOpacity>
+              <View style={styles.card}>
+                <View style={styles.cardContent}>
+                  <Text style={styles.cardText}>{item.name}</Text>
+                  <View style={styles.cardButtons}>
+                    <TouchableOpacity onPress={() => handleDelete(item)}>
+                      <Ionicons name="trash-outline" size={22} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleArrowPress(item)}>
+                      <Ionicons name="chevron-forward-outline" size={22} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
               </View>
             </View>
           ))
         ) : (
-          <Text style={styles.noActivitiesText}>
-            No activities for this date.
-          </Text>
+          <Text style={styles.noActivitiesText}>No activities for this date.</Text>
         )}
       </ScrollView>
     </View>
@@ -174,7 +167,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     margin: 16,
-    fontFamily:"Vilonti-Bold",
+    fontFamily: "Vilonti-Bold",
     alignSelf: 'center',
   },
   calendar: {
@@ -201,13 +194,13 @@ const styles = StyleSheet.create({
   },
   cardButtons: {
     flexDirection: 'row',
-    columnGap: 12, // use marginRight if needed
+    columnGap: 12,
   },
   noActivitiesText: {
     fontSize: 16,
     color: '#555',
     textAlign: 'center',
-    fontFamily:"Vilonti-Bold",
+    fontFamily: "Vilonti-Bold",
     marginTop: 20,
   },
 });

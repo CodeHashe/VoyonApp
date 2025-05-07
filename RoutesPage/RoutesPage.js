@@ -30,7 +30,6 @@ import fetchLocationImage from "../fetchData/fetchLocationImage";
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Google API Key
 const apiKey = "AIzaSyBWZnkXjy-CQOj5rjRxTolNWw4uQQcbd4w";
 
 export default function RoutesPage() {
@@ -42,13 +41,11 @@ export default function RoutesPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Helpers to unify field names
   const getOrigin = (item) =>
     item.mode === "air" ? item.source : item.from;
   const getDestination = (item) =>
     item.mode === "air" ? item.destination : item.to;
 
-  // Fetch routes + images
   const fetchRoutes = useCallback(async () => {
     const user = auth.currentUser;
     if (!user) return;
@@ -62,7 +59,6 @@ export default function RoutesPage() {
       setRoutes(userRoutes);
       setLoading(false);
 
-      // Preload images
       for (const route of userRoutes) {
         const origin = getOrigin(route);
         const destination = getDestination(route);
@@ -94,7 +90,6 @@ export default function RoutesPage() {
     setRefreshing(false);
   };
 
-  // Delete a route both in Firestore and locally
   const handleDeleteRoute = async (item) => {
     const user = auth.currentUser;
     const userEmail = user?.email;
@@ -118,7 +113,7 @@ export default function RoutesPage() {
       for (const docSnap of snap.docs) {
         await deleteDoc(doc(db, "Routes", docSnap.id));
       }
-      // Update local state
+      
       setRoutes((prev) =>
         prev.filter(
           (r) =>
